@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FinCity — Finance Adventure</title>
+<style>
+:root {
+  --bg: #07071a;
+  --card: #10102a;
+  --card2: #181838;
+  --accent: #7c6dfa;
+  --accent2: #a090ff;
+  --gold: #f5c518;
+  --green: #00c896;
+  --red: #ff6080;
+  --blue: #4fc3f7;
+  --text: #e4e4f4;
+  --muted: #7878aa;
+  --border: #252550;
+  --r: 14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(circle at 15% 15%,rgba(124,109,250,.07) 0%,transparent 55%),radial-gradient(circle at 85% 85%,rgba(0,200,150,.04) 0%,transparent 55%);pointer-events:none}
+
+/* SCREENS */
+.screen{display:none;min-height:100vh;padding:28px 24px;max-width:1080px;margin:0 auto}
+.screen.active{display:block}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 28px;border-radius:50px;font-size:15px;font-weight:600;cursor:pointer;border:none;transition:all .18s;line-height:1}
+.btn-lg{padding:16px 40px;font-size:17px}
+.btn-sm{padding:8px 18px;font-size:13px}
+.btn-primary{background:linear-gradient(135deg,var(--accent),#9060f0);color:#fff}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(124,109,250,.4)}
+.btn-gold{background:linear-gradient(135deg,var(--gold),#e8a800);color:#111}
+.btn-gold:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(245,197,24,.35)}
+.btn-green{background:linear-gradient(135deg,var(--green),#00a87a);color:#111}
+.btn-green:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,200,150,.35)}
+.btn-ghost{background:var(--card2);color:var(--text);border:1px solid var(--border)}
+.btn-ghost:hover{border-color:var(--accent)}
+.btn-red{background:rgba(255,96,128,.15);color:var(--red);border:1px solid rgba(255,96,128,.3)}
+.btn-red:hover{background:rgba(255,96,128,.25)}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none!important}
+
+/* HOME */
+.home-center{text-align:center;padding:80px 20px 60px}
+.home-logo{font-size:80px;display:block;animation:float 3s ease-in-out infinite;margin-bottom:12px}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.home-title{font-size:56px;font-weight:800;background:linear-gradient(135deg,var(--accent2),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:10px}
+.home-sub{font-size:20px;color:var(--muted);margin-bottom:44px}
+.home-features{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:48px}
+.feature-chip{background:var(--card);border:1px solid var(--border);border-radius:50px;padding:8px 18px;font-size:13px;color:var(--muted)}
+.feature-chip span{color:var(--text);font-weight:600}
+.btn-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+
+/* STATS BAR */
+.stats-bar{display:flex;gap:12px;justify-content:flex-end;margin-bottom:28px;flex-wrap:wrap}
+.stat-pill{background:var(--card);border:1px solid var(--border);border-radius:50px;padding:7px 18px;font-size:13px;display:flex;align-items:center;gap:8px}
+.stat-v{font-weight:700;color:var(--gold)}
+
+/* MAP */
+.map-title{font-size:30px;font-weight:800;margin-bottom:8px}
+.map-sub{color:var(--muted);font-size:14px;margin-bottom:28px}
+.chapters-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px}
+.ch-card{background:var(--card);border:2px solid var(--border);border-radius:var(--r);padding:20px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.ch-card:hover:not(.locked){transform:translateY(-4px);border-color:var(--accent);box-shadow:0 8px 28px rgba(124,109,250,.2)}
+.ch-card.locked{opacity:.45;cursor:not-allowed}
+.ch-card.done{border-color:var(--green)}
+.ch-card.done::after{content:'✓';position:absolute;top:10px;right:10px;background:var(--green);color:#111;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+.ch-num{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.ch-icon{font-size:34px;margin-bottom:10px;display:block}
+.ch-title{font-size:14px;font-weight:700;margin-bottom:3px}
+.ch-tag{font-size:12px;color:var(--muted)}
+.lock-icon{position:absolute;top:10px;right:12px;font-size:16px}
+
+/* CHAPTER VIEW */
+.back-btn{display:inline-flex;align-items:center;gap:6px;background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;margin-bottom:22px;padding:0;transition:color .2s}
+.back-btn:hover{color:var(--text)}
+.ch-header{display:flex;align-items:center;gap:14px;margin-bottom:24px}
+.ch-header-icon{font-size:42px}
+.ch-header-title{font-size:26px;font-weight:800}
+.ch-header-sub{font-size:13px;color:var(--muted);margin-top:2px}
+
+.phase-nav{display:flex;align-items:center;gap:8px;margin-bottom:24px}
+.phase-step{display:flex;align-items:center;gap:6px;font-size:12px;padding:6px 14px;border-radius:50px;border:1px solid var(--border);color:var(--muted)}
+.phase-step.active{background:rgba(124,109,250,.15);border-color:var(--accent);color:var(--accent2)}
+.phase-step.done{background:rgba(0,200,150,.1);border-color:var(--green);color:var(--green)}
+.phase-arrow{color:var(--border);font-size:12px}
+
+.ch-body{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
+@media(max-width:720px){.ch-body{grid-template-columns:1fr}}
+
+/* PANELS */
+.panel{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:22px}
+.panel-label{font-size:11px;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:6px}
+.panel-label::before{content:'';width:7px;height:7px;background:var(--accent);border-radius:50%;flex-shrink:0}
+
+/* STORY */
+.scene-box{background:linear-gradient(135deg,#0c0c24,#180e40);border-radius:10px;padding:20px;text-align:center;font-size:52px;margin-bottom:18px;min-height:96px;display:flex;align-items:center;justify-content:center;gap:8px}
+.dialogue{margin-bottom:12px}
+.dlg-who{font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;display:flex;align-items:center;gap:5px}
+.dlg-who.finn{color:var(--gold)}
+.dlg-who.alex{color:var(--accent2)}
+.dlg-who.narrator{color:var(--muted)}
+.dlg-text{background:var(--card2);border-radius:8px;padding:11px 14px;font-size:14px;line-height:1.65}
+.dlg-text.finn{border-left:3px solid var(--gold)}
+.dlg-text.alex{border-left:3px solid var(--accent2)}
+.dlg-text.narrator{border-left:3px solid var(--muted);font-style:italic;color:var(--muted)}
+
+.concept-box{background:linear-gradient(135deg,rgba(124,109,250,.08),rgba(0,200,150,.04));border:1px solid rgba(124,109,250,.2);border-radius:10px;padding:14px;margin-top:16px}
+.concept-box h4{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--accent2);margin-bottom:6px}
+.concept-box p{font-size:13px;line-height:1.7}
+
+/* INTERACTIVE */
+.info-box{background:rgba(124,109,250,.07);border:1px solid rgba(124,109,250,.2);border-radius:10px;padding:12px 15px;font-size:13px;line-height:1.65;margin:12px 0}
+.info-box.gold{background:rgba(245,197,24,.07);border-color:rgba(245,197,24,.25)}
+.info-box.green{background:rgba(0,200,150,.07);border-color:rgba(0,200,150,.25)}
+.info-box.red{background:rgba(255,96,128,.07);border-color:rgba(255,96,128,.25)}
+
+.big-number{font-size:36px;font-weight:800;text-align:center;padding:8px 0}
+.big-number.gold{color:var(--gold)}
+.big-number.green{color:var(--green)}
+.big-number.red{color:var(--red)}
+.big-number.accent{color:var(--accent2)}
+
+.wallet{display:flex;gap:10px;margin-bottom:14px}
+.wallet-item{flex:1;background:var(--card2);border-radius:10px;padding:12px;text-align:center}
+.wallet-label{font-size:11px;color:var(--muted);margin-bottom:4px}
+.wallet-value{font-size:18px;font-weight:700}
+
+/* PROGRESS/BARS */
+.bar-row{margin:8px 0}
+.bar-labels{display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px}
+.bar-track{background:var(--card2);border-radius:4px;height:10px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;transition:width .4s ease}
+.bar-fill.accent{background:linear-gradient(90deg,var(--accent),var(--accent2))}
+.bar-fill.gold{background:linear-gradient(90deg,var(--gold),#e8a800)}
+.bar-fill.green{background:linear-gradient(90deg,var(--green),#00a87a)}
+.bar-fill.red{background:linear-gradient(90deg,var(--red),#cc3060)}
+
+input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;margin:6px 0}
+
+/* ORDER BOOK */
+.orderbook{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+.ob-side{background:var(--card2);border-radius:10px;padding:12px}
+.ob-label{font-size:11px;text-transform:uppercase;letter-spacing:1px;text-align:center;margin-bottom:8px;font-weight:600}
+.ob-label.ask{color:var(--red)}
+.ob-label.bid{color:var(--green)}
+.ob-row{display:flex;justify-content:space-between;padding:4px 0;font-size:13px;border-bottom:1px solid var(--border)}
+.ob-row:last-child{border-bottom:none}
+.price.ask{color:var(--red);font-weight:600}
+.price.bid{color:var(--green);font-weight:600}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;padding:8px 10px;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--border)}
+.tbl td{padding:10px;border-bottom:1px solid var(--border)}
+.tbl tr:last-child td{border-bottom:none}
+.up{color:var(--green)}
+.dn{color:var(--red)}
+
+/* QUIZ */
+.quiz-wrap{max-width:620px;margin:0 auto}
+.quiz-q{font-size:18px;font-weight:600;line-height:1.5;margin-bottom:22px}
+.quiz-q-num{font-size:12px;color:var(--muted);margin-bottom:8px}
+.quiz-opts{display:flex;flex-direction:column;gap:10px}
+.quiz-opt{background:var(--card2);border:2px solid var(--border);border-radius:12px;padding:14px 18px;cursor:pointer;transition:all .18s;font-size:14px;text-align:left;width:100%;color:var(--muted)}
+.quiz-opt:hover:not([disabled]){border-color:var(--accent)}
+.quiz-opt.correct{border-color:var(--green)!important;background:rgba(0,200,150,.1)}
+.quiz-opt.wrong{border-color:var(--red)!important;background:rgba(255,96,128,.1)}
+.quiz-explain{margin-top:14px;padding:14px;background:rgba(124,109,250,.08);border:1px solid rgba(124,109,250,.25);border-radius:10px;font-size:13px;line-height:1.65;display:none}
+.quiz-explain.show{display:block}
+
+/* COMPLETION */
+.complete-card{background:var(--card);border:2px solid var(--green);border-radius:var(--r);padding:44px;text-align:center;max-width:480px;margin:60px auto}
+.complete-icon{font-size:76px;margin-bottom:14px;display:block}
+.complete-title{font-size:30px;font-weight:800;color:var(--gold);margin-bottom:8px}
+.complete-sub{color:var(--muted);font-size:15px;margin-bottom:22px}
+.coins-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(245,197,24,.1);border:1px solid rgba(245,197,24,.3);border-radius:50px;padding:10px 24px;font-size:22px;font-weight:700;color:var(--gold);margin-bottom:28px}
+
+/* NOTIFICATION */
+.notif{position:fixed;top:22px;right:22px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 18px;display:flex;align-items:center;gap:10px;box-shadow:0 8px 32px rgba(0,0,0,.5);transform:translateY(-70px);opacity:0;transition:all .3s;z-index:9999;max-width:300px}
+.notif.show{transform:translateY(0);opacity:1}
+.notif.ok{border-color:var(--green)}
+.notif.bad{border-color:var(--red)}
+.notif-icon{font-size:22px}
+.notif-text{font-size:14px}
+
+/* CANVAS CHART */
+canvas{border-radius:8px;display:block;width:100%}
+
+/* PROGRESS RING */
+.prog-ring{text-align:center;margin:10px 0}
+
+/* MISC */
+.divider{border:none;border-top:1px solid var(--border);margin:16px 0}
+.tag{display:inline-block;background:rgba(124,109,250,.15);color:var(--accent2);border-radius:4px;padding:2px 8px;font-size:12px;font-weight:600}
+.tag.gold{background:rgba(245,197,24,.15);color:var(--gold)}
+.tag.green{background:rgba(0,200,150,.15);color:var(--green)}
+.tag.red{background:rgba(255,96,128,.15);color:var(--red)}
+.mt8{margin-top:8px}.mt12{margin-top:12px}.mt16{margin-top:16px}.mt20{margin-top:20px}
+.flex{display:flex}.gap8{gap:8px}.gap12{gap:12px}.items-center{align-items:center}.justify-between{justify-content:space-between}.flex-wrap{flex-wrap:wrap}
+.text-center{text-align:center}
+.bold{font-weight:700}
+.small{font-size:13px;color:var(--muted)}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+/* MINING BUTTON */
+.mine-btn{font-size:52px;background:none;border:3px solid var(--accent);border-radius:50%;width:110px;height:110px;cursor:pointer;transition:all .1s;display:flex;align-items:center;justify-content:center;margin:0 auto}
+.mine-btn:active{transform:scale(.92);background:rgba(124,109,250,.2)}
+
+/* OPTION DIAGRAM */
+.payoff-row{display:flex;align-items:center;gap:10px;font-size:13px;margin:6px 0}
+.payoff-label{width:90px;color:var(--muted)}
+.payoff-bar-track{flex:1;background:var(--card2);border-radius:4px;height:14px;position:relative;overflow:visible}
+.payoff-bar-fill{height:100%;border-radius:4px;transition:width .3s,background .3s}
+.payoff-val{width:60px;text-align:right;font-weight:600}
+
+/* VIEW TOGGLE */
+.view-toggle-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:8px}
+.view-toggle{display:flex;background:var(--card);border:1px solid var(--border);border-radius:50px;padding:4px;gap:2px}
+.vt-btn{background:transparent;border:none;border-radius:50px;padding:7px 22px;font-size:13px;font-weight:600;cursor:pointer;color:var(--muted);transition:all .18s;line-height:1;white-space:nowrap}
+.vt-btn.active{background:var(--card2);color:var(--text);box-shadow:0 2px 8px rgba(0,0,0,.25)}
+.vt-btn:hover:not(.active){color:var(--text)}
+</style>
+</head>
+<body>
+
+<!-- HOME -->
+<div id="screen-home" class="screen active">
+  <div class="home-center">
+    <span class="home-logo">🏙️</span>
+    <div class="home-title">FinCity</div>
+    <div class="home-sub">Learn every financial concept through story & play</div>
+    <div class="home-features">
+      <div class="feature-chip">📚 <span>15 Chapters</span></div>
+      <div class="feature-chip">🎮 <span>Interactive Games</span></div>
+      <div class="feature-chip">🏆 <span>Earn FinCoins</span></div>
+      <div class="feature-chip">💡 <span>Real Concepts</span></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary btn-lg" onclick="startGame()">🚀 Start Adventure</button>
+      <button class="btn btn-ghost btn-lg" id="continue-btn" onclick="showMap()" style="display:none">▶ Continue</button>
+    </div>
+    <div style="margin-top:40px;color:var(--muted);font-size:13px">Guide: Finn 🦊 &nbsp;·&nbsp; You: Alex 🧑 &nbsp;·&nbsp; City: FinCity 🏙️</div>
+  </div>
+</div>
+
+<!-- MAP -->
+<div id="screen-map" class="screen">
+  <div class="stats-bar">
+    <div class="stat-pill">🪙 Coins: <span class="stat-v" id="map-coins">0</span></div>
+    <div class="stat-pill">📖 Progress: <span class="stat-v" id="map-prog">0/15</span></div>
+  </div>
+  <div class="map-title">🗺️ FinCity Map</div>
+  <div class="map-sub">Complete each chapter to unlock the next. Earn FinCoins along the way!</div>
+  <div class="chapters-grid" id="chapters-grid"></div>
+</div>
+
+<!-- CHAPTER -->
+<div id="screen-chapter" class="screen">
+  <button class="back-btn" onclick="showMap()">← Back to Map</button>
+  <div class="stats-bar">
+    <div class="stat-pill">🪙 <span class="stat-v" id="ch-coins">0</span></div>
+  </div>
+  <div class="ch-header">
+    <div class="ch-header-icon" id="ch-icon"></div>
+    <div>
+      <div class="ch-header-title" id="ch-title"></div>
+      <div class="ch-header-sub" id="ch-sub"></div>
+    </div>
+  </div>
+  <div class="phase-nav" id="phase-nav"></div>
+  <div id="ch-content"></div>
+</div>
+
+<!-- NOTIFICATION -->
+<div class="notif" id="notif">
+  <span class="notif-icon" id="notif-icon"></span>
+  <span class="notif-text" id="notif-text"></span>
+</div>
+
+<script src="chapters.js"></script>
+<script src="game.js"></script>
+</body>
+</html>

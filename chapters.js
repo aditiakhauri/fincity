@@ -1,0 +1,396 @@
+const CHAPTERS = [
+  {
+    id: 'stock-market', num: 1, icon: '🏦', title: 'The Stock Market',
+    tag: 'Own a slice of any company',
+    scene: '🌆🏪🍌',
+    dialogues: [
+      { who: 'narrator', text: 'Alex just arrived in FinCity for the very first time — a city where money, markets, and opportunity come alive. Guide Finn the Fox trots over with a big smile.' },
+      { who: 'finn', text: 'Welcome to FinCity! Before we talk about the stock market, let\'s start with something really simple. Do you know what a company actually IS?' },
+      { who: 'alex', text: 'It\'s... a business? Like a shop or a factory?' },
+      { who: 'finn', text: 'Exactly. See that banana stand over there? That\'s BananaCo. The owner started it with their own money, built it up, and now the entire business — the stand, the bananas, all future profits — is worth $10,000. That total worth is called the company\'s VALUE.' },
+      { who: 'alex', text: 'Okay, so BananaCo is worth $10,000. What does the stock market have to do with that?' },
+      { who: 'finn', text: 'Here\'s where it gets interesting. The owner decided to slice that $10,000 value into 1,000 equal tiny pieces. Each piece is called a SHARE (or a STOCK). So: 1,000 shares × $10 each = $10,000 total. Anyone can buy these pieces!' },
+      { who: 'alex', text: 'If I buy one share for $10, I own one tiny piece of BananaCo?' },
+      { who: 'finn', text: 'Yes! 1 share out of 1,000 = 0.1% ownership. Buy 100 shares ($1,000) and you own 10% of BananaCo. You\'re literally a part-owner of that banana business — a SHAREHOLDER.' },
+      { who: 'alex', text: 'Why would the owner sell pieces of their own company? Wouldn\'t they lose control?' },
+      { who: 'finn', text: 'They do it to raise MONEY. Opening more stands, buying better equipment, hiring staff — all of that costs money. Instead of a bank loan, they sell shares. Investors give them cash upfront and become co-owners. As long as the owner keeps more than 50% of shares, they keep control.' },
+      { who: 'alex', text: 'And what do I get as an investor who buys shares?' },
+      { who: 'finn', text: 'Two things! If BananaCo grows and doubles in value to $20,000, your shares double too — your $100 becomes $200. And if they earn profits, they might share some with you as DIVIDENDS (we\'ll cover that soon!).' },
+      { who: 'alex', text: 'What if BananaCo does badly? Like, nobody wants bananas anymore?' },
+      { who: 'finn', text: 'Then the share price falls. If the company is now only worth $5,000, your shares are worth half what you paid. You could LOSE money. That\'s the RISK of investing — and why understanding what you\'re buying matters so much.' },
+      { who: 'narrator', text: 'The STOCK MARKET is the place — now mostly digital — where all these shares are listed, bought, and sold every day, with prices changing by the second based on supply and demand.' },
+    ],
+    concept: 'A stock is a share of ownership in a company. Companies sell shares to raise money. Investors buy shares hoping the company grows — making the shares worth more.',
+    quiz: [
+      { q: 'BananaCo is worth $10,000 and split into 1,000 shares. If you buy 50 shares, what % of the company do you own?', opts: ['5%', '10%', '50%', '0.5%'], ans: 0, exp: '50 ÷ 1000 = 5%. Ownership = shares you hold ÷ total shares × 100.' },
+      { q: 'Why do companies sell shares on the stock market?', opts: ['To raise money for growth', 'To give away free money', 'To pay taxes', 'To track customers'], ans: 0, exp: 'Companies sell shares (go public) to raise capital — money they can use to expand, hire, or invest without taking loans.' }
+    ]
+  },
+  {
+    id: 'bid-ask', num: 2, icon: '💱', title: 'Bid & Ask',
+    tag: 'How prices are actually set',
+    scene: '🏪🤝💰',
+    dialogues: [
+      { who: 'narrator', text: 'Alex wanders to the FinCity Auction Hall. Hundreds of buyers and sellers are shouting prices at each other. It looks chaotic — but Finn says there\'s a perfect system underneath.' },
+      { who: 'finn', text: 'Before we dive in, a simple question: if you were selling your old bike and someone offered you $80 for it, but you wanted $100 — what would happen?' },
+      { who: 'alex', text: 'We\'d probably negotiate... maybe settle on $90?' },
+      { who: 'finn', text: 'Exactly! You had an ASKING price (the minimum you\'d accept) and they had a BIDDING price (the maximum they\'d pay). In the stock market, this same tug-of-war happens millions of times a day, automatically.' },
+      { who: 'alex', text: 'So the "bid" is what buyers are offering to pay right now?' },
+      { who: 'finn', text: 'Right. The BID is the highest price any buyer is currently willing to pay. Right now, the best bid for BananaCo is $48 — someone is saying "I\'ll pay up to $48 per share, not a cent more."' },
+      { who: 'alex', text: 'And the "ask" is the sellers\' side?' },
+      { who: 'finn', text: 'Exactly. The ASK (also called "offer") is the lowest price any seller will currently accept — $52. The gap between them is the SPREAD: $52 − $48 = $4. A deal doesn\'t happen yet because buyers and sellers haven\'t agreed.' },
+      { who: 'alex', text: 'So if I want to buy a share RIGHT NOW, which price do I pay?' },
+      { who: 'finn', text: 'You pay the ASK — $52. Because the cheapest a seller will go is $52. If you want to SELL right now, you get the BID — $48. You\'re accepting what the highest buyer is currently offering.' },
+      { who: 'alex', text: 'That means if I buy at $52 and immediately sell, I only get $48 back? I lose $4 instantly?' },
+      { who: 'finn', text: 'Yes! That\'s the cost of trading. The $4 goes to the MARKET MAKER — a professional trader who sits between buyers and sellers. They buy at the bid ($48) and sell at the ask ($52), pocketing the spread. In return, they always provide quotes so you can always trade instantly.' },
+      { who: 'alex', text: 'So is a bigger spread worse for me as a regular investor?' },
+      { who: 'finn', text: 'Yes! Tighter spreads = lower trading costs. Popular stocks like Apple have spreads of just $0.01 because so many people trade them. Rare or thinly-traded stocks might have $2–$5 spreads. Always check the spread before trading — it\'s a hidden cost most beginners completely miss.' },
+    ],
+    concept: 'Bid = highest price a buyer will pay. Ask = lowest price a seller will accept. Spread = Ask − Bid. If you want to buy immediately, you pay the Ask. If you want to sell immediately, you get the Bid.',
+    quiz: [
+      { q: 'The bid price is $95 and the ask price is $97. What is the spread?', opts: ['$2', '$95', '$97', '$192'], ans: 0, exp: 'Spread = Ask − Bid = $97 − $95 = $2. This $2 is the market maker\'s profit per round-trip.' },
+      { q: 'If you want to BUY a stock RIGHT NOW (not wait), which price do you pay?', opts: ['The Ask price', 'The Bid price', 'The midpoint', 'The spread'], ans: 0, exp: 'When buying immediately (market order), you pay the Ask — the lowest price a seller is willing to accept right now.' }
+    ]
+  },
+  {
+    id: 'trading', num: 3, icon: '⚡', title: 'Trading',
+    tag: 'How to buy and sell',
+    scene: '💻📊🔔',
+    dialogues: [
+      { who: 'narrator', text: 'Alex enters the FinCity Exchange — a buzzing trading floor with screens everywhere showing live prices.' },
+      { who: 'finn', text: 'So you\'ve decided to buy BananaCo shares. You open your trading app and see a "Buy" button. Seems simple, right? But HOW you place that order makes a huge difference to the price you actually get.' },
+      { who: 'alex', text: 'I thought you just click "buy" and you own shares?' },
+      { who: 'finn', text: 'You do — but there are different TYPES of buy orders, each with trade-offs. The simplest is a MARKET ORDER. It says: "Buy me 10 shares RIGHT NOW at whatever price the market is offering." It fills instantly.' },
+      { who: 'alex', text: 'Sounds perfect. What\'s the downside?' },
+      { who: 'finn', text: 'You give up price control. If BananaCo is at $50 but the market is moving fast, by the time your order fills it might be $51 or $52. That gap between what you expected and what you got is called SLIPPAGE. For small calm trades it\'s fine — but on big or fast-moving stocks it can cost you.' },
+      { who: 'alex', text: 'What if I only want to buy at exactly $45 — not a cent more?' },
+      { who: 'finn', text: 'Then use a LIMIT ORDER. You tell the system: "Only buy BananaCo if the price drops to $45 or lower." Your order joins a queue and WAITS. The moment the stock hits $45, your order fills automatically at that price.' },
+      { who: 'alex', text: 'So I get the exact price I want — but I might wait forever and it never fills?' },
+      { who: 'finn', text: 'Exactly the trade-off: market orders guarantee EXECUTION but not price. Limit orders guarantee PRICE but not execution. If BananaCo never drops to $45, you don\'t get the shares — but you also don\'t lose any money.' },
+      { who: 'alex', text: 'What about protecting myself after I own shares, if the price starts falling?' },
+      { who: 'finn', text: 'That\'s where STOP ORDERS come in. You own BananaCo at $50. Set a stop at $42: "If the price ever falls to $42, automatically sell." It becomes a market order the moment that price is hit — like a safety net that exits you automatically before losses get worse.' },
+      { who: 'alex', text: 'So market orders are fast, limit orders are precise, and stop orders are protective?' },
+      { who: 'finn', text: 'Perfect summary! Professionals combine all three: buy with a limit order for a good entry price, set a stop order to cap losses, use market orders when speed matters more than price. Having a plan before you trade is what separates investors from gamblers.' },
+    ],
+    concept: 'Market Order: fill immediately at best available price. Limit Order: only fill if price reaches your target. Stop Order: triggers when price crosses a threshold — used to limit losses.',
+    quiz: [
+      { q: 'You set a LIMIT BUY order for BananaCo at $44. The stock is currently at $50. When does your order execute?', opts: ['When the price falls to $44', 'Immediately at $50', 'Never', 'At market close'], ans: 0, exp: 'A limit buy order only executes when the stock price falls to (or below) your specified limit price of $44.' },
+      { q: 'What is a key risk of using a Market Order?', opts: ['You might pay more than expected (slippage)', 'Your order might never fill', 'It costs extra fees always', 'It can only be used at market open'], ans: 0, exp: 'Market orders fill immediately but at the current market price — which can be worse than you expected, especially for illiquid stocks. This is called slippage.' }
+    ]
+  },
+  {
+    id: 'dividends', num: 4, icon: '💸', title: 'Dividends',
+    tag: 'Getting paid to own shares',
+    scene: '🍌💰📬',
+    dialogues: [
+      { who: 'narrator', text: 'Three months after buying BananaCo shares, Alex gets an unexpected envelope in the mail...' },
+      { who: 'alex', text: 'Finn! BananaCo sent me $50 and I didn\'t sell anything. What is this?!' },
+      { who: 'finn', text: 'Congratulations — that\'s a DIVIDEND! But let\'s understand where that money comes from. When a company earns more money than it spends in a period, that extra is called PROFIT (or EARNINGS).' },
+      { who: 'alex', text: 'Okay, so BananaCo made a profit. What do they usually do with it?' },
+      { who: 'finn', text: 'A company has two main choices: reinvest it back into the business (open more stands, buy equipment, hire people) — or share some of it with shareholders. When they share profits with shareholders, those payments are called DIVIDENDS.' },
+      { who: 'alex', text: 'So BananaCo declared $1 dividend per share, I own 50 shares, so I get $50?' },
+      { who: 'finn', text: 'Exactly right! 50 × $1 = $50. Just for HOLDING the shares — you didn\'t have to do anything. This is called PASSIVE INCOME. You own a piece of the business, and the business pays you a share of its profits.' },
+      { who: 'alex', text: 'Do all companies pay dividends?' },
+      { who: 'finn', text: 'No — and this is important. Young, fast-growing companies (think early Amazon or Tesla) usually don\'t pay dividends. They reinvest every dollar to grow faster. Shareholders make money through rising stock prices instead.' },
+      { who: 'alex', text: 'Which types of companies DO pay dividends then?' },
+      { who: 'finn', text: 'Stable, mature businesses — banks, utilities, consumer goods companies. Coca-Cola has paid dividends every single year for decades. They\'re past rapid growth, so they return profits to shareholders instead of reinvesting.' },
+      { who: 'alex', text: 'How do I compare dividends across different stocks?' },
+      { who: 'finn', text: 'Use the DIVIDEND YIELD: Annual Dividend ÷ Share Price × 100%. Stock costs $100 and pays $4/year? Yield = 4%. A yield above 5% is considered high — but be careful, a very high yield can signal the company is struggling and may cut the dividend soon!' },
+      { who: 'alex', text: 'Can I reinvest dividends automatically to buy more shares?' },
+      { who: 'finn', text: 'Yes! It\'s called a DRIP — Dividend Reinvestment Plan. Instead of taking the cash, dividends automatically buy more shares. Over decades, this turbocharges compounding: more shares → more dividends → even more shares. It\'s one of the most powerful wealth-building tools available.' },
+    ],
+    concept: 'Dividends are cash payments companies make to shareholders from profits. Dividend Yield = Annual Dividend ÷ Share Price × 100%. Companies that pay consistent dividends are often seen as stable investments.',
+    quiz: [
+      { q: 'A stock is priced at $200 and pays an annual dividend of $8 per share. What is the dividend yield?', opts: ['4%', '8%', '2%', '40%'], ans: 0, exp: 'Dividend Yield = $8 ÷ $200 × 100 = 4%. This means for every $100 invested, you earn $4/year in dividends.' },
+      { q: 'Why might a fast-growing tech startup NOT pay dividends?', opts: ['They reinvest all profits to grow faster', 'They are too small', 'Dividends are illegal for tech companies', 'They prefer stock buybacks always'], ans: 0, exp: 'Growth companies typically reinvest profits back into expansion (R&D, hiring, marketing) rather than distributing cash. Shareholders benefit through rising stock prices instead.' }
+    ]
+  },
+  {
+    id: 'portfolio', num: 5, icon: '🗂️', title: 'Portfolio',
+    tag: 'Don\'t put all eggs in one basket',
+    scene: '🧺🍌🥇⛽',
+    dialogues: [
+      { who: 'narrator', text: 'Alex made a great profit on BananaCo and now has $1,000 to invest. They\'re about to put it ALL into BananaCo — but Finn stops them.' },
+      { who: 'finn', text: 'Wait! Before you do that, let me tell you a story. Imagine you\'re a farmer. You plant ALL your crops in one single field. A flood hits — you lose EVERYTHING. But if you\'d split your crops across five different fields...' },
+      { who: 'alex', text: 'Only one field floods, and you still have four others producing!' },
+      { who: 'finn', text: 'That\'s DIVERSIFICATION — the single most important concept in investing. Never put all your money in one place. Your total collection of investments is called your PORTFOLIO.' },
+      { who: 'alex', text: 'So instead of $1,000 in BananaCo, I should spread it around?' },
+      { who: 'finn', text: 'Exactly. Split it: $400 in BananaCo stock, $200 in GoldCorp, $150 in OilPlus Energy, $150 in FinCity Government Bonds, $100 in cash. Now no single disaster can wipe you out.' },
+      { who: 'alex', text: 'Why does spreading across DIFFERENT types help? Can\'t all stocks fall together?' },
+      { who: 'finn', text: 'They can — but different ASSET CLASSES behave differently. When stocks crash, gold often rises (it\'s a "safe haven"). Bonds often go up when stocks go down. When assets don\'t move together, they have LOW CORRELATION. Low correlation = better diversification.' },
+      { who: 'alex', text: 'What are the main asset classes I should know about?' },
+      { who: 'finn', text: 'Four main ones: STOCKS (ownership in companies — high risk, high potential return), BONDS (loans to governments or companies — lower risk, steady return), REAL ESTATE (property — inflation hedge), and CASH. Most portfolios mix stocks and bonds as the core.' },
+      { who: 'alex', text: 'What\'s the right split for me?' },
+      { who: 'finn', text: 'That depends on your RISK TOLERANCE — how much potential loss you can stomach. Young investors with decades ahead can afford more risk (80% stocks). Near retirement? Shift to stability (more bonds). This decision — your mix — is called ASSET ALLOCATION.' },
+      { who: 'alex', text: 'Is there a simple rule of thumb for beginners?' },
+      { who: 'finn', text: 'A popular starting point: your stock % = 110 minus your age. At 25? About 85% stocks. At 60? About 50% stocks. It\'s not perfect — it\'s just a starting point to adjust from based on your personal comfort with risk.' },
+    ],
+    concept: 'A portfolio is your full collection of investments. Diversification spreads risk across assets that don\'t move in sync. Correlation measures how assets move together — low correlation = better diversification.',
+    quiz: [
+      { q: 'You invest $1000: $500 in Tech stocks, $300 in Gold, $200 in Bonds. Tech crashes -50%. What\'s your loss?', opts: ['$250 loss', '$500 loss', '$1000 loss', '$150 loss'], ans: 0, exp: '$500 × 50% = $250 loss. The other $500 (gold + bonds) is unaffected. Diversification limited your damage to 25% of portfolio vs 50%.' },
+      { q: 'What does "asset allocation" mean?', opts: ['How you divide your money across different asset types', 'Buying only one type of asset', 'The total value of your investments', 'A type of stock order'], ans: 0, exp: 'Asset allocation is the strategic decision of how to divide your portfolio among asset classes (stocks, bonds, real estate, cash) based on your goals and risk tolerance.' }
+    ]
+  },
+  {
+    id: 'volatility', num: 6, icon: '🌊', title: 'Volatility',
+    tag: 'The measure of market drama',
+    scene: '📉📈🎢',
+    dialogues: [
+      { who: 'narrator', text: 'Alex is looking at two stocks on the FinCity big screen. One is a flat, calm line. The other is a wild roller coaster. Both ended the year at the same price — but the journey was completely different.' },
+      { who: 'finn', text: 'Quick question: which job is riskier — one that pays exactly $3,000 every month, or one that pays anywhere between $0 and $10,000 randomly each month?' },
+      { who: 'alex', text: 'The random one — even if the average might be higher, I can\'t plan around it.' },
+      { who: 'finn', text: 'That unpredictability IS volatility. In investing, VOLATILITY measures how much an asset\'s price MOVES up and down over time. A stock that swings 10% every day is highly volatile. One that barely budges is low volatility.' },
+      { who: 'alex', text: 'How is volatility actually measured with a number?' },
+      { who: 'finn', text: 'Mathematically, it\'s the STANDARD DEVIATION of price changes — a measure of how far prices typically stray from their average. A 2% standard deviation means most days it moves about 2%. A 15% standard deviation means wild daily swings are normal.' },
+      { who: 'alex', text: 'So volatile stocks are always bad investments?' },
+      { who: 'finn', text: 'Not at all! Volatility is a double-edged sword. A stock that can fall 40% in a month can ALSO rise 40% in a month. High volatility = bigger risk AND bigger potential reward. Low volatility = steadier, predictable, but lower upside. Neither is "bad" — it depends on your goals.' },
+      { who: 'alex', text: 'What types of stocks are typically volatile?' },
+      { who: 'finn', text: 'Small companies, tech startups, biotech, cryptocurrency — anything where the future is highly uncertain. Stable businesses like supermarkets or electricity utilities have low volatility because their earnings are predictable. Nobody suddenly stops buying groceries.' },
+      { who: 'alex', text: 'What is the VIX? I keep hearing about it.' },
+      { who: 'finn', text: 'The VIX is the "Fear Index" — it measures EXPECTED volatility for the entire US stock market over the next 30 days. When investors are calm, VIX is low (around 15–20). When markets are panicking, VIX spikes. During COVID in March 2020, it hit 80. Extreme fear.' },
+      { who: 'alex', text: 'Can I use the VIX to make smarter investment decisions?' },
+      { who: 'finn', text: 'Yes! A very high VIX often signals a buying opportunity — stocks are cheap because people are panicking. A very low VIX can signal dangerous complacency before a correction. Savvy investors watch it as a market "temperature gauge." Some even trade the VIX itself as a volatility bet!' },
+    ],
+    concept: 'Volatility measures how much an asset\'s price swings. High volatility = big gains OR big losses. Low volatility = steady, predictable. VIX is the market\'s "fear gauge." Risk-averse investors prefer low volatility assets.',
+    quiz: [
+      { q: 'Stock A swings ±2% per day. Stock B swings ±15% per day. Which is more volatile?', opts: ['Stock B', 'Stock A', 'They are equal', 'Cannot tell from this data'], ans: 0, exp: 'Stock B with ±15% daily swings has much higher volatility. It offers bigger potential gains but also far greater risk of loss.' },
+      { q: 'The VIX index spikes from 18 to 65. What does this likely indicate?', opts: ['Markets are panicking or crashing', 'Markets are hitting all-time highs', 'Interest rates were lowered', 'A major company went public'], ans: 0, exp: 'A VIX spike to 65 signals extreme fear and uncertainty in markets. This typically coincides with crashes or major crises — investors are expecting huge price swings.' }
+    ]
+  },
+  {
+    id: 'interest-rates', num: 7, icon: '🏛️', title: 'Interest Rates Market',
+    tag: 'The price of borrowing money',
+    scene: '🏦💵🔢',
+    dialogues: [
+      { who: 'narrator', text: 'Alex needs $5,000 to expand their FinCity fruit stand. They walk into FinCity National Bank, where Finn explains how borrowing money really works.' },
+      { who: 'finn', text: 'Let\'s start from scratch. When you borrow money, you\'re essentially RENTING it. Just like renting a car costs money per day, borrowing money costs money per year. That fee is called INTEREST.' },
+      { who: 'alex', text: 'So if I borrow $5,000, I pay back MORE than $5,000?' },
+      { who: 'finn', text: 'Exactly. The INTEREST RATE is that extra cost, expressed as a percentage per year. Borrow $5,000 at 10% annual interest — you owe $500 in interest after one year, plus the original $5,000 back. The lender earns $500 for letting you use their money.' },
+      { who: 'alex', text: 'Who decides what the interest rate is?' },
+      { who: 'finn', text: 'For the whole economy, it\'s the CENTRAL BANK — like the US Federal Reserve, the European Central Bank, or the Bank of England. They set a base rate, and all commercial banks adjust their rates from there. This base rate is one of the most powerful levers in the entire global economy.' },
+      { who: 'alex', text: 'Why would a central bank raise or lower this rate?' },
+      { who: 'finn', text: 'To control the economy! HIGH rates = expensive borrowing = people and businesses borrow less = less spending = prices stop rising (inflation cools). LOW rates = cheap borrowing = more spending and investment = economy grows. It\'s like the economy\'s thermostat.' },
+      { who: 'alex', text: 'What\'s the difference between simple and compound interest?' },
+      { who: 'finn', text: 'SIMPLE INTEREST is calculated only on the original amount. COMPOUND INTEREST is interest on your interest too! Example: $1,000 at 10% for 2 years. Simple: $1,200. Compound: Year 1 → $1,100, Year 2 → $1,100 × 1.10 = $1,210. That extra $10 is "interest on interest."' },
+      { who: 'alex', text: 'That\'s only a $10 difference — not that impressive?' },
+      { who: 'finn', text: 'Give it 30 years! $1,000 at 10% compounded = $17,449. Simple interest gives just $4,000. The longer you wait, the more dramatic the gap becomes. Einstein supposedly called compound interest "the eighth wonder of the world" — and he wasn\'t wrong.' },
+      { who: 'alex', text: 'How do interest rate changes affect stocks and investments?' },
+      { who: 'finn', text: 'When rates RISE, bond prices FALL (new bonds pay more, making old ones less attractive) and stocks often fall too (companies pay more to borrow, hurting profits). When rates FALL, both tend to rise. This is why every word from the Fed chairman is watched obsessively by investors worldwide.' },
+    ],
+    concept: 'Interest rate = cost of borrowing money. Central banks raise rates to fight inflation, cut rates to stimulate growth. Compound interest = earning interest on your interest. Bonds are priced on interest rates — rates up, bond prices down.',
+    quiz: [
+      { q: 'You invest $1,000 at 8% annual compound interest. After 2 years, how much do you have?', opts: ['$1,166.40', '$1,160', '$1,080', '$1,200'], ans: 0, exp: 'Year 1: $1000 × 1.08 = $1,080. Year 2: $1,080 × 1.08 = $1,166.40. That extra $6.40 is the "interest on interest" — the magic of compounding!' },
+      { q: 'When the central bank RAISES interest rates, what typically happens to the economy?', opts: ['Borrowing slows, inflation cools', 'Borrowing surges, economy booms', 'Stock market always rises', 'Currency always weakens'], ans: 0, exp: 'Higher rates make loans more expensive for businesses and consumers, reducing spending and investment. This cools down an overheating economy and brings inflation down.' }
+    ]
+  },
+  {
+    id: 'fx-market', num: 8, icon: '🌍', title: 'FX Market',
+    tag: 'Trading one currency for another',
+    scene: '✈️💴💶💵',
+    dialogues: [
+      { who: 'narrator', text: 'Alex is at the FinCity airport, about to fly to EuroLand. They need to exchange their US dollars for Euros. Finn explains why this is far more fascinating than it looks.' },
+      { who: 'finn', text: 'Let\'s start with a basic question: why do different currencies even exist? Why can\'t everyone just use one global currency?' },
+      { who: 'alex', text: 'I guess because each country controls its own money and economy?' },
+      { who: 'finn', text: 'Exactly. Each country (or currency zone) issues its own currency and controls its supply. The FOREIGN EXCHANGE market — called FOREX or FX — is where these currencies are traded against each other, 24 hours a day, 7 days a week, nonstop.' },
+      { who: 'alex', text: 'How big is this market actually?' },
+      { who: 'finn', text: '$7 TRILLION traded every single day. That\'s bigger than ALL the world\'s stock markets combined. It\'s the largest financial market on Earth. Banks, corporations, governments, hedge funds, tourists — everyone participates.' },
+      { who: 'alex', text: 'How is an exchange rate determined? Why is $1 worth 0.92 euros today and not some other number?' },
+      { who: 'finn', text: 'Pure SUPPLY AND DEMAND. If the US economy is booming and global investors want to buy US assets, they need dollars — demand rises, dollar price rises. If the US has high inflation, the dollar buys less, its value falls. Economic strength, interest rates, and politics all constantly move currency prices.' },
+      { who: 'alex', text: 'How do I read a currency rate? Like EUR/USD = 1.10 — what exactly does that mean?' },
+      { who: 'finn', text: 'Currency pairs always show how much of the SECOND currency you get for ONE unit of the FIRST. EUR/USD = 1.10 means: 1 Euro buys 1.10 US Dollars. EUR is the BASE currency. USD is the QUOTE currency. Easy memory trick: "one of the first buys X of the second."' },
+      { who: 'alex', text: 'So if EUR/USD goes from 1.10 to 1.20, the Euro got stronger against the dollar?' },
+      { who: 'finn', text: 'Yes! Each Euro now buys MORE dollars — the Euro strengthened. A falling EUR/USD means the Euro weakened. Forex traders profit by correctly predicting these movements, sometimes holding positions for just seconds!' },
+      { who: 'alex', text: 'How do big companies deal with currency risk — like Apple earning in Euros but reporting in dollars?' },
+      { who: 'finn', text: 'Great question! That\'s currency risk. If Apple earns €100M and the euro weakens vs the dollar, those euros convert to fewer dollars when reported. Companies HEDGE this using FX forward contracts — locking in today\'s exchange rate for future payments. We\'ll cover hedging in detail soon!' },
+    ],
+    concept: 'Forex (FX) is the global market for trading currencies. Exchange rates are currency pair prices. Major pairs: EUR/USD, GBP/USD, USD/JPY. Rates shift based on interest rates, inflation, GDP, and political events.',
+    quiz: [
+      { q: 'EUR/USD = 1.10. You convert $1,100 USD to EUR. How many euros do you get?', opts: ['€1,000', '€1,100', '€1,210', '€910'], ans: 0, exp: 'EUR/USD = 1.10 means $1.10 buys €1. So $1,100 ÷ 1.10 = €1,000. You always divide by the rate to get the base currency.' },
+      { q: 'Country A raises interest rates to 6% while Country B stays at 2%. What likely happens to Country A\'s currency?', opts: ['It strengthens — more investors buy it for higher yield', 'It weakens — borrowing is expensive', 'No effect on currency', 'It becomes fixed permanently'], ans: 0, exp: 'Higher interest rates attract foreign investors seeking better returns. They buy Country A\'s currency to invest there, increasing demand and strengthening it.' }
+    ]
+  },
+  {
+    id: 'commodities', num: 9, icon: '⛽', title: 'Commodity & Energy Markets',
+    tag: 'Trading real physical things',
+    scene: '🛢️🌽🥇🌤️',
+    dialogues: [
+      { who: 'narrator', text: 'Alex discovers FinCity\'s massive warehouse district — rows of storage filled with gold bars, oil drums, sacks of wheat, and bags of coffee. This is where the world\'s raw materials get priced.' },
+      { who: 'finn', text: 'Everything you own started as a RAW MATERIAL. Your phone contains copper and rare earth metals. Your bread came from wheat. Your car runs on oil. These raw materials — called COMMODITIES — are traded on global markets just like stocks.' },
+      { who: 'alex', text: 'What exactly counts as a commodity?' },
+      { who: 'finn', text: 'Any raw material that\'s interchangeable — one barrel of West Texas crude oil is essentially the same as any other barrel. Commodities fall into four groups: ENERGY (oil, natural gas), METALS (gold, silver, copper), AGRICULTURE (wheat, corn, coffee, soybeans), and LIVESTOCK (cattle, pork).' },
+      { who: 'alex', text: 'Why do oil prices affect EVERYTHING? I hear about it constantly.' },
+      { who: 'finn', text: 'Because oil is in almost EVERYTHING. It fuels the trucks that deliver food. It heats homes. Plastics come from oil. When oil prices rise, costs increase for nearly every product and service. Higher oil = higher inflation across the whole economy. That\'s why governments and central banks obsess over it.' },
+      { who: 'alex', text: 'What drives commodity prices up and down?' },
+      { who: 'finn', text: 'Purely SUPPLY AND DEMAND. A drought destroys wheat crops → supply drops → wheat price spikes. OPEC (the oil cartel) cuts production → less oil available → oil price rises. A global recession → factories slow down → they need less copper → copper price falls. It\'s that direct.' },
+      { who: 'alex', text: 'Does a trader actually take delivery of 1,000 barrels of oil?' },
+      { who: 'finn', text: 'Ha! Most commodity traders NEVER see the actual stuff. They trade FUTURES CONTRACTS — agreements to buy or sell a set amount at a future date. Airlines buy oil futures to lock in fuel costs. Farmers sell wheat futures to guarantee a crop price before harvest. Speculators trade purely for profit.' },
+      { who: 'alex', text: 'I\'ve heard gold is a "safe haven." What does that actually mean?' },
+      { who: 'finn', text: 'When stock markets crash or inflation spikes, investors flee to gold. It\'s been valued for 5,000 years, can\'t be printed like paper money, and isn\'t tied to any single country. In times of fear, gold tends to HOLD its value when everything else falls. It\'s the ultimate financial security blanket.' },
+      { who: 'alex', text: 'Can I invest in commodities without literally storing oil in my garage?' },
+      { who: 'finn', text: 'Absolutely! Commodity ETFs (Exchange-Traded Funds) let you buy a fund that tracks oil, gold, or agricultural prices. Or invest in companies that PRODUCE commodities — oil companies, gold miners, farming conglomerates. Much more practical than physical storage!' },
+    ],
+    concept: 'Commodities are raw materials: energy (oil, gas), metals (gold, silver, copper), agriculture (wheat, corn, coffee). Prices follow supply/demand. Commodities can hedge inflation since their prices tend to rise when inflation rises.',
+    quiz: [
+      { q: 'OPEC (oil cartel) unexpectedly CUTS oil production by 20%. What likely happens to oil prices?', opts: ['Prices rise — less supply', 'Prices fall — less supply', 'No change', 'Prices fall — more demand'], ans: 0, exp: 'Basic supply/demand: less supply with the same demand = higher prices. OPEC production cuts are specifically used to push oil prices up to benefit member countries.' },
+      { q: 'Why do investors sometimes buy gold when the economy is uncertain?', opts: ['Gold is a "safe haven" — holds value when stocks crash', 'Gold always pays dividends', 'Gold never loses value', 'It is required by law'], ans: 0, exp: 'Gold is considered a safe haven asset. When stocks crash or inflation rises, investors flee to gold as it tends to hold its value and isn\'t tied to any single economy or currency.' }
+    ]
+  },
+  {
+    id: 'derivatives', num: 10, icon: '📜', title: 'Derivatives',
+    tag: 'Contracts derived from other assets',
+    scene: '📜🔗🍌📊',
+    dialogues: [
+      { who: 'narrator', text: 'Finn leads Alex to the most complex corner of FinCity: The Derivatives District. The buildings look familiar — but everything here is a layer ABOVE the actual assets.' },
+      { who: 'finn', text: 'Let\'s start with a real-world situation. You\'re planning a wedding in 6 months. The florist says roses cost $5 today — but prices fluctuate. You sign a contract guaranteeing $5 per rose in 6 months, no matter what happens to prices.' },
+      { who: 'alex', text: 'That\'s like insurance against price changes.' },
+      { who: 'finn', text: 'Exactly! And that\'s the core of a DERIVATIVE — a financial CONTRACT whose value is DERIVED FROM something else (the UNDERLYING ASSET). That underlying could be a stock, oil price, currency, interest rate, or even weather. The derivative itself has no value on its own.' },
+      { who: 'alex', text: 'So a derivative isn\'t an asset itself — it\'s a contract ABOUT an asset?' },
+      { who: 'finn', text: 'Right. There are four main types: FUTURES (you MUST buy/sell on a future date at today\'s agreed price), OPTIONS (you have the RIGHT but not the obligation — covered next chapter), SWAPS (exchange one stream of payments for another), and FORWARDS (custom futures negotiated directly between two parties).' },
+      { who: 'alex', text: 'Give me a real futures example?' },
+      { who: 'finn', text: 'You\'re a baker. Wheat is $300/ton today and you need 10 tons in 6 months. You sign a FUTURES CONTRACT: you agree to buy 10 tons at $300 in 6 months, no matter what the market price is then. Wheat spikes to $400? You still pay $300. You\'ve LOCKED IN your cost — you\'ve HEDGED.' },
+      { who: 'alex', text: 'What if wheat DROPS to $200? Am I stuck paying $300?' },
+      { who: 'finn', text: 'Yes — that\'s the downside of futures. It\'s an OBLIGATION, not a choice. You must transact at the agreed price even if the market moved against you. This is why OPTIONS are often preferred — they give you the right WITHOUT the obligation.' },
+      { who: 'alex', text: 'I\'ve heard derivatives are extremely risky. Why?' },
+      { who: 'finn', text: 'LEVERAGE. Derivatives let you control a large position with a small deposit. Put $10,000 down to control $100,000 of oil futures — that\'s 10x leverage. If oil moves 5% in your favor, you gain $5,000 on a $10,000 deposit — 50% return. But if oil moves 5% against you, you LOSE $5,000. Half your money, gone.' },
+      { who: 'alex', text: 'Is this what caused the 2008 financial crisis?' },
+      { who: 'finn', text: 'Partly! Banks created complex mortgage-backed derivatives called CDOs. They were sold with massive leverage, with no one fully understanding the risk. When US house prices fell, the entire chain of derivatives collapsed. Derivatives are powerful tools for managing risk — but used recklessly, they can bring down the entire financial system.' },
+    ],
+    concept: 'Derivatives are contracts that derive value from an underlying asset. Key types: Futures (obligation), Options (right, not obligation), Swaps (exchange cash flows). They enable hedging, speculation, and arbitrage. Leverage amplifies both gains and losses.',
+    quiz: [
+      { q: 'A baker buys a wheat FUTURES contract at $300/ton for delivery in 6 months. Wheat rises to $400/ton. What does the baker gain?', opts: ['$100/ton saved on their wheat costs', '$400/ton saved', 'Nothing — futures only help sellers', 'They lose $100/ton'], ans: 0, exp: 'The baker locked in $300/ton. Market price rose to $400. They effectively "saved" $100/ton vs buying at market. They can now buy at their contracted $300 price.' },
+      { q: 'Which best describes a "derivative"?', opts: ['A contract whose value depends on an underlying asset', 'A stock that pays dividends', 'A savings account', 'A type of bank loan'], ans: 0, exp: 'Derivatives get their value FROM something else (the underlying asset). On their own, they have no intrinsic value — only the value tied to what they reference.' }
+    ]
+  },
+  {
+    id: 'options', num: 11, icon: '🎯', title: 'Options Exchanges',
+    tag: 'The right, but not the obligation',
+    scene: '🎯📋🏷️',
+    dialogues: [
+      { who: 'narrator', text: 'Alex enters the FinCity Options Exchange — the most sophisticated trading venue in all of FinCity. Here, traders don\'t just buy assets — they buy and sell the RIGHT to buy or sell.' },
+      { who: 'finn', text: 'Let\'s start with an everyday example. You find a house you love. You pay the owner $500 for the RIGHT to buy it for $200,000 any time in the next 3 months. The owner agrees. You haven\'t bought the house — just the option to buy it.' },
+      { who: 'alex', text: 'So I\'ve locked in the purchase price but haven\'t fully committed yet?' },
+      { who: 'finn', text: 'Exactly! That $500 is the PREMIUM — what you paid for the option. $200,000 is the STRIKE PRICE — your locked-in purchase price. 3 months is the EXPIRY — your deadline. That\'s a CALL OPTION: the right to BUY at the strike price.' },
+      { who: 'alex', text: 'What makes this useful? Why not just buy the house outright?' },
+      { who: 'finn', text: 'Flexibility and leverage! If prices rise to $230,000, you exercise your option — buy at $200,000, instantly worth $230,000. Profit: $30,000 from a $500 bet. Without the option, you\'d need the full $200,000 upfront. Options let you control large assets cheaply.' },
+      { who: 'alex', text: 'What if the house price falls to $180,000? I wouldn\'t want to buy at $200,000 anymore.' },
+      { who: 'finn', text: 'Then you simply walk away — let the option expire. Your MAXIMUM LOSS is only the $500 premium you paid. That\'s the key advantage over buying outright: your downside is CAPPED at the premium. You\'re never forced to buy at a bad price.' },
+      { who: 'alex', text: 'You mentioned CALL options. What\'s a PUT option?' },
+      { who: 'finn', text: 'A PUT option is the right to SELL at the strike price. Say you already own the house and worry prices might crash. Buy a PUT at $200,000 — if prices fall to $150,000, you can still force someone to buy it at your $200,000 strike. It\'s downside protection.' },
+      { who: 'alex', text: 'So calls profit when prices RISE, puts profit when prices FALL?' },
+      { who: 'finn', text: 'Exactly! Long CALL = bullish bet (expecting price to rise). Long PUT = bearish bet (expecting price to fall). They\'re used for speculation — but also for PROTECTION. A PUT on shares you already own is essentially portfolio insurance.' },
+      { who: 'alex', text: 'What does "in the money" mean?' },
+      { who: 'finn', text: 'A CALL is "in the money" (ITM) when the current price is ABOVE the strike — exercising it RIGHT NOW would be profitable. A PUT is ITM when the price is BELOW the strike. "Out of the money" (OTM) means exercising isn\'t worth it yet. Knowing your option\'s status tells you whether to exercise, hold, or let it expire.' },
+    ],
+    concept: 'Call Option: right to BUY at strike price. Put Option: right to SELL at strike price. Premium: cost of the option. In-the-money: exercising is profitable. Out-of-the-money: exercising isn\'t worth it yet. Options expire on a set date.',
+    quiz: [
+      { q: 'You buy a CALL option on BananaCo: Strike $55, Premium $3, Current price $50. Stock jumps to $65. What\'s your profit per share?', opts: ['$7', '$10', '$65', '$3'], ans: 0, exp: 'You exercise the right to buy at $55. You can immediately sell at $65. Profit = $65 − $55 − $3 premium = $7 per share.' },
+      { q: 'A PUT option gives you the right to ____?', opts: ['Sell a stock at the strike price', 'Buy a stock at the strike price', 'Receive dividends automatically', 'Borrow the stock'], ans: 0, exp: 'A PUT = right to SELL at the strike price. Profitable when the stock price falls BELOW the strike price. Used for speculation or protection (hedging).' }
+    ]
+  },
+  {
+    id: 'payoffs', num: 12, icon: '📐', title: 'Payoffs',
+    tag: 'Mapping your profit and loss',
+    scene: '📐📊💹',
+    dialogues: [
+      { who: 'narrator', text: 'Finn pulls out a whiteboard. "Before you ever enter a trade," Finn says firmly, "you need to map out what you stand to GAIN — and LOSE — at every possible price. That\'s a payoff diagram."' },
+      { who: 'finn', text: 'Every trade has a PAYOFF — your profit or loss depending on what the price does. Let\'s start with the simplest: you own a stock outright. What happens to your P&L?' },
+      { who: 'alex', text: 'If it goes up I make money. If it goes down I lose money. Linear, right?' },
+      { who: 'finn', text: 'Exactly! Buy BananaCo at $50. Stock hits $80? Profit = +$30. Falls to $20? Loss = −$30. Every $1 the stock moves = $1 gain or loss for you. And it can theoretically fall all the way to zero — unlimited loss.' },
+      { who: 'alex', text: 'How does the payoff shape look different for a call option?' },
+      { who: 'finn', text: 'Totally different! Call option: Strike $55, Premium $3. Below $55 at expiry → option expires worthless, you lose exactly $3 (the premium). Between $55–$58 → you start recovering losses. Above $58 (strike + premium) → profit. The shape has a FLAT FLOOR at −$3, then slopes upward.' },
+      { who: 'alex', text: 'So the call option has a max loss of $3, but owning the stock directly risks losing $50 if it goes to zero?' },
+      { who: 'finn', text: 'YES — and that\'s the huge advantage of buying options. Your risk is CAPPED at the premium you paid. You can never lose more than what you paid for the option. The trade-off is that you need the stock to move MORE to make a profit (above $58 rather than just above $50).' },
+      { who: 'alex', text: 'What about a put option payoff?' },
+      { who: 'finn', text: 'Mirror image! Put option: Strike $50, Premium $2. Above $50 → option worthless, lose $2. Below $50 → start recovering. Below $48 (strike − premium) → profit. The diagram slopes DOWNWARD as prices fall — you\'re making money on declining prices.' },
+      { who: 'alex', text: 'How do I quickly calculate where I break even?' },
+      { who: 'finn', text: 'Simple formulas: CALL break-even = Strike + Premium. PUT break-even = Strike − Premium. These are the exact prices the stock must reach for you to recover what you paid. Above break-even for calls: profit. Below break-even for puts: profit.' },
+      { who: 'alex', text: 'Why do professional traders sketch payoff diagrams before every trade?' },
+      { who: 'finn', text: 'Because it forces you to answer three questions BEFORE you commit: What\'s my maximum loss? Where do I break even? At what price do I profit? If you can\'t answer those, you don\'t understand your trade. Drawing the payoff literally is professional risk management 101 — never skip it.' },
+    ],
+    concept: 'Payoff = profit/loss at expiry. Long Stock: linear payoff. Long Call: lose premium if below strike, profit above (strike + premium). Long Put: lose premium above strike, profit below (strike − premium). Always know your break-even!',
+    quiz: [
+      { q: 'You buy a call option: strike $60, premium $4. At what stock price do you BREAK EVEN?', opts: ['$64', '$60', '$56', '$4'], ans: 0, exp: 'Call break-even = Strike + Premium = $60 + $4 = $64. Below $64 you lose money (up to max loss of $4 premium). Above $64 you profit.' },
+      { q: 'What is the MAXIMUM LOSS when you BUY a call option?', opts: ['The premium you paid', 'The full stock price', 'Unlimited', 'The strike price'], ans: 0, exp: 'When you buy an option, your maximum loss is capped at the premium you paid. If the option expires worthless, you lose $0 beyond that premium — a key advantage over short-selling.' }
+    ]
+  },
+  {
+    id: 'hedging', num: 13, icon: '🛡️', title: 'Hedging',
+    tag: 'Insurance for your investments',
+    scene: '🛡️📉😌',
+    dialogues: [
+      { who: 'narrator', text: 'Alex owns 100 BananaCo shares at $50 each — a $5,000 investment. Bad news about a banana disease is spreading. Finn shows up with a solution.' },
+      { who: 'finn', text: 'Let me ask you something. You insure your car, right? Even though you hope you never need it, you pay a premium every month so that if something goes wrong, you\'re covered financially. HEDGING is exactly the same idea — but for your investments.' },
+      { who: 'alex', text: 'So it\'s buying insurance for my stocks?' },
+      { who: 'finn', text: 'Precisely! HEDGING means taking a SECOND position that moves in the OPPOSITE direction to your main investment. If your main investment falls, the hedge rises to offset some of that loss. You don\'t make extra profit — you LIMIT your downside. You trade some potential gain for protection.' },
+      { who: 'alex', text: 'How would I actually hedge my BananaCo shares?' },
+      { who: 'finn', text: 'The simplest way: buy a PUT OPTION on BananaCo. Pay $2 per share for the right to SELL at $48 (the strike price) any time in the next 3 months. For 100 shares, that\'s $200 total — your insurance premium.' },
+      { who: 'alex', text: 'What happens if the stock crashes to $30?' },
+      { who: 'finn', text: 'Without hedge: your 100 shares are worth $3,000 instead of $5,000 — a $2,000 loss. WITH the hedge: you exercise your put, selling at $48. Revenue: $4,800 minus $200 premium cost. Net result: −$400 instead of −$2,000. The hedge SAVED you $1,600!' },
+      { who: 'alex', text: 'What if the stock actually RISES to $70? Did I waste that $200 on the put?' },
+      { who: 'finn', text: 'The put expires worthless — you lose the $200 premium. But your 100 shares are now worth $7,000 — a $2,000 profit! Net: +$1,800. Think of the $200 like a car insurance premium you never had to claim. You\'re still glad you had the protection.' },
+      { who: 'alex', text: 'Who uses hedging in the real world outside of investing?' },
+      { who: 'finn', text: 'Everyone who faces financial uncertainty! Airlines hedge fuel costs with oil futures — locking in prices months ahead. Apple hedges currency risk with FX contracts. Farmers sell wheat futures before harvest to lock in a guaranteed price. Hedging is how professionals manage uncertainty in business.' },
+      { who: 'alex', text: 'Can you hedge too much? Is 100% hedging even possible?' },
+      { who: 'finn', text: 'You can — and it\'s a mistake. If you hedge 100% of your portfolio, you eliminate all risk — but also all return potential. The art is hedging the RIGHT risks. Fund managers ask: which risks are we PAID to take (keep those), which risks are just noise (hedge those). Balance is everything.' },
+    ],
+    concept: 'Hedging reduces risk by taking an offsetting position. Common techniques: buy put options to protect long stock, use futures to lock in prices, use inverse ETFs. Hedging costs money (the premium/cost) but reduces downside risk.',
+    quiz: [
+      { q: 'You own stock at $100. To hedge, you buy a put option with strike $90 for $3 premium. The stock crashes to $60. What is your effective sell price?', opts: ['$87 ($90 − $3 premium)', '$90', '$60', '$97'], ans: 0, exp: 'You exercise the put and sell at $90 (the strike). Net of the $3 premium cost, your effective outcome is $87. Without the hedge, you\'d be stuck at $60 — a $27 improvement!' },
+      { q: 'What is the primary purpose of hedging?', opts: ['To limit losses, even at the cost of some gains', 'To maximize profits', 'To avoid all risk completely', 'To trade more frequently'], ans: 0, exp: 'Hedging trades some potential upside for downside protection. It\'s not about eliminating risk entirely — that\'s impossible — but about managing it to an acceptable level.' }
+    ]
+  },
+  {
+    id: 'otc', num: 14, icon: '🤝', title: 'OTC Market',
+    tag: 'Direct deals, no exchange needed',
+    scene: '🤝🏢📋',
+    dialogues: [
+      { who: 'narrator', text: 'Alex has heard about a unique investment: a $1 million custom BananaCo bond with very specific terms. It\'s not listed on any exchange. Finn explains why — and how OTC markets work.' },
+      { who: 'finn', text: 'You already understand stock exchanges — like the NYSE. Think of them like a supermarket: standardized products at posted prices, regulated, transparent, with a guarantee your trade will settle. But not everything fits in a supermarket.' },
+      { who: 'alex', text: 'What doesn\'t fit in an exchange?' },
+      { who: 'finn', text: 'Custom deals! What if you want a completely unique contract — specific amount, negotiated price, unusual terms? That\'s where OVER-THE-COUNTER (OTC) markets come in. Trades happen DIRECTLY between two parties. No exchange, no middleman, no standardized product.' },
+      { who: 'alex', text: 'What kinds of things actually trade OTC?' },
+      { who: 'finn', text: 'Lots! Most BONDS are traded OTC — corporations and governments negotiate directly with large investors. The entire FOREX market is OTC (no central exchange, just a network of banks). Complex DERIVATIVES like interest rate swaps. Even some small-company stocks. The global OTC derivatives market alone exceeds $600 TRILLION.' },
+      { who: 'alex', text: 'How does an OTC trade actually happen in practice?' },
+      { who: 'finn', text: 'You call a DEALER — typically a large bank like Goldman Sachs. They quote you a bid and ask, you negotiate every term, agree on the details, and sign a legal contract. For large deals, this takes hours of back-and-forth. It\'s nothing like clicking "buy" on an app.' },
+      { who: 'alex', text: 'What\'s the downside? If there\'s no exchange guaranteeing the trade...' },
+      { who: 'finn', text: 'You\'ve spotted the key risk: COUNTERPARTY RISK. In exchange trading, a CLEARINGHOUSE guarantees every trade — if one party defaults, the clearinghouse covers it. In OTC, if your counterparty goes bankrupt mid-contract, you could lose everything with no safety net.' },
+      { who: 'alex', text: 'Isn\'t that basically what happened in the 2008 crisis?' },
+      { who: 'finn', text: 'Exactly! AIG had written hundreds of billions in OTC credit derivatives — essentially insurance against mortgage defaults. When housing crashed, AIG couldn\'t pay. But they\'d sold these to EVERY major bank. If AIG failed, the whole financial system collapsed. The US government bailed them out for $182 billion.' },
+      { who: 'alex', text: 'Did anything change after 2008 to prevent this?' },
+      { who: 'finn', text: 'Yes — major reforms. Dodd-Frank in the US and EMIR in Europe now require most standard OTC derivatives to be cleared through CENTRAL CLEARINGHOUSES (reducing counterparty risk) and reported to regulators (improving transparency). OTC still thrives — but with far more oversight than before.' },
+    ],
+    concept: 'OTC markets are decentralized — trades happen directly between parties (often via phone/electronic platforms), not on a formal exchange. More flexible but carries counterparty risk. Major OTC markets: bonds, forex, and exotic derivatives.',
+    quiz: [
+      { q: 'What is "counterparty risk" in OTC trading?', opts: ['Risk that the other party in a deal defaults or can\'t pay', 'Risk of overpaying for an asset', 'The bid-ask spread on OTC trades', 'Government regulation of OTC markets'], ans: 0, exp: 'In OTC trades, there\'s no clearinghouse to guarantee the deal. If your counterparty goes bankrupt mid-contract, you may be left with nothing. This is counterparty risk.' },
+      { q: 'Why might a large corporation prefer OTC over an exchange for a $500M interest rate swap?', opts: ['Customizable terms, huge size, no exchange lists such products', 'OTC is always cheaper', 'OTC has faster settlement', 'Regulations require it'], ans: 0, exp: 'OTC allows fully custom contracts — specific notional amounts, payment schedules, reset dates — that standardized exchange products can\'t accommodate. For complex institutional needs, OTC is often the only option.' }
+    ]
+  },
+  {
+    id: 'crypto', num: 15, icon: '₿', title: 'Cryptocurrencies',
+    tag: 'Digital money and blockchain',
+    scene: '₿🔗💻🌐',
+    dialogues: [
+      { who: 'narrator', text: 'Alex stumbles upon CryptoCorner — the newest district in FinCity. It glows with servers and screens. Everything here is digital, decentralized, and unlike anything Alex has seen before.' },
+      { who: 'finn', text: 'Let\'s start from zero. The dollar is money issued by the US government — a central authority controls how many dollars exist and can print more. What if money could exist WITHOUT any government or central authority controlling it?' },
+      { who: 'alex', text: 'Is that even possible? Wouldn\'t people just create unlimited fake money?' },
+      { who: 'finn', text: 'That was THE key problem Bitcoin solved in 2009! The answer: CRYPTOGRAPHY and decentralization. Instead of one bank keeping the ledger, THOUSANDS of computers worldwide all hold the SAME copy simultaneously. Cheating one copy is useless — you\'d have to cheat 51% of all computers at once.' },
+      { who: 'alex', text: 'What\'s a blockchain? Everyone uses that word but nobody explains it.' },
+      { who: 'finn', text: 'Imagine a Google Sheet shared with 10,000 computers around the world. Every 10 minutes, a new "page" (BLOCK) of verified transactions gets added. Each page links to the previous one — forming a CHAIN. Once written, a block can NEVER be edited. That permanent, distributed record is the BLOCKCHAIN.' },
+      { who: 'alex', text: 'Who decides which transactions get added to the blockchain?' },
+      { who: 'finn', text: 'MINERS! Thousands of computers compete to solve a complex math puzzle. The first to solve it earns the right to add the next block — and receives newly created Bitcoin as a reward. This is PROOF OF WORK. It secures the network because attacking it would require more computing power than ALL honest miners combined.' },
+      { who: 'alex', text: 'Won\'t miners just keep creating new Bitcoin forever?' },
+      { who: 'finn', text: 'No! Bitcoin has a hard cap of 21 MILLION coins — permanently built into the code. Nobody can change this. The reward per block also HALVES approximately every 4 years (called the HALVING). Scarcity is baked in by design, which is why some call Bitcoin "digital gold."' },
+      { who: 'alex', text: 'What makes crypto fundamentally different from just using PayPal or Venmo?' },
+      { who: 'finn', text: 'Three things: DECENTRALIZATION (no company or government controls it — the network runs itself), PERMISSIONLESS (anyone anywhere can use it with no bank account needed), and PROGRAMMABILITY. Ethereum extends this with SMART CONTRACTS — self-executing code that automatically carries out deals when conditions are met. No humans, no lawyers, just math.' },
+      { who: 'alex', text: 'Why does Bitcoin\'s price swing so wildly? It can drop 80% and then rise 1,000%?' },
+      { who: 'finn', text: 'Several reasons: it\'s still relatively small (the entire crypto market is tiny vs stocks or bonds), regulation is uncertain and varies by country, it produces no earnings or dividends to anchor its value, and market sentiment dominates pricing. It\'s highly speculative — driven by supply, demand, and belief more than fundamentals.' },
+      { who: 'alex', text: 'Should I invest in crypto?' },
+      { who: 'finn', text: 'Only what you\'re genuinely comfortable losing entirely. Crypto can be a small part of a diversified portfolio (some suggest 5–10% max for risk-tolerant investors) — but it\'s NOT a replacement for stocks, bonds, or savings. It\'s a high-risk, high-reward bet on an early and still-evolving technology. Never put in money you might need.' },
+    ],
+    concept: 'Cryptocurrency: decentralized digital currency using blockchain. Blockchain: immutable distributed ledger. Mining: computational work to validate transactions, earns block rewards. Key risks: extreme volatility, regulation, hacks. Key appeal: decentralization, programmability (smart contracts).',
+    quiz: [
+      { q: 'What is the PRIMARY purpose of a blockchain?', opts: ['A secure, decentralized record of all transactions', 'A faster payment network controlled by banks', 'A type of cryptocurrency', 'An exchange for buying digital assets'], ans: 0, exp: 'Blockchain is the underlying technology — a distributed, immutable ledger. Cryptocurrencies like Bitcoin run ON blockchains, but blockchain itself is a data structure for recording transactions without a central authority.' },
+      { q: 'Bitcoin\'s "mining" process serves which function?', opts: ['Validates transactions and secures the network', 'Creates physical coins', 'Pays bank employees', 'Calculates exchange rates'], ans: 0, exp: 'Mining = solving computational puzzles to add verified blocks of transactions to the chain. Miners earn Bitcoin rewards for this work, which simultaneously secures the network against fraud and manipulation.' }
+    ]
+  }
+];
