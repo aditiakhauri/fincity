@@ -1,16 +1,151 @@
+// ===== LOADING =====
+const _loadMsgs = ['Warming up the markets…','Briefing Finn the Fox…','Opening the exchange floors…','FinCity is ready!'];
+
+function runLoader(onDone) {
+  const bar = document.getElementById('loading-bar');
+  const txt = document.getElementById('loading-text');
+  let progress = 0, msgIdx = 0;
+  const tick = setInterval(() => {
+    progress = Math.min(100, progress + Math.random() * 18 + 8);
+    bar.style.width = progress + '%';
+    const ni = progress < 35 ? 0 : progress < 65 ? 1 : progress < 92 ? 2 : 3;
+    if (ni !== msgIdx) { msgIdx = ni; txt.textContent = _loadMsgs[msgIdx]; }
+    if (progress >= 100) {
+      clearInterval(tick);
+      setTimeout(() => { document.getElementById('loading-screen').classList.add('done'); onDone(); }, 500);
+    }
+  }, 110);
+}
+
+// ===== SCROLL REVEAL =====
+function initReveal() {
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+  }, { threshold: 0.07 });
+  document.querySelectorAll('.reveal:not(.visible), .reveal-left:not(.visible)').forEach(el => obs.observe(el));
+}
+
+// ===== AUTH =====
+let currentUser = null;
+
+async function hashPassword(pw) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pw));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+function getUsers() { return JSON.parse(localStorage.getItem('fincity_users') || '{}'); }
+function saveUsers(u) { localStorage.setItem('fincity_users', JSON.stringify(u)); }
+
+function validatePassword(p) {
+  const errs = [];
+  if (p.length < 8)        errs.push('8+ characters');
+  if (!/[A-Z]/.test(p))   errs.push('an uppercase letter');
+  if (!/[a-z]/.test(p))   errs.push('a lowercase letter');
+  if (!/[0-9]/.test(p))   errs.push('a number');
+  return errs;
+}
+
+function updatePasswordRules() {
+  const p = document.getElementById('reg-password')?.value || '';
+  [['rule-len', p.length >= 8], ['rule-upper', /[A-Z]/.test(p)],
+   ['rule-lower', /[a-z]/.test(p)], ['rule-num', /[0-9]/.test(p)]].forEach(([id, ok]) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = (ok ? '✓ ' : '✗ ') + el.dataset.text;
+    el.style.color = ok ? 'var(--green)' : 'var(--muted)';
+  });
+}
+
+async function handleRegister() {
+  const username = document.getElementById('reg-username').value.trim();
+  const password = document.getElementById('reg-password').value;
+  const confirm  = document.getElementById('reg-confirm').value;
+  const errEl    = document.getElementById('reg-error');
+  errEl.textContent = '';
+
+  if (username.length < 3 || username.length > 20) {
+    errEl.textContent = 'Username must be 3–20 characters.'; return;
+  }
+  if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+    errEl.textContent = 'Username: only letters, numbers and underscores.'; return;
+  }
+  const pwErrs = validatePassword(password);
+  if (pwErrs.length) { errEl.textContent = 'Password needs: ' + pwErrs.join(', ') + '.'; return; }
+  if (password !== confirm) { errEl.textContent = 'Passwords do not match.'; return; }
+
+  const users = getUsers();
+  if (users[username.toLowerCase()]) { errEl.textContent = 'Username already taken.'; return; }
+
+  users[username.toLowerCase()] = { username, hash: await hashPassword(password), created: Date.now() };
+  saveUsers(users);
+  startSession(username);
+}
+
+async function handleLogin() {
+  const username = document.getElementById('login-username').value.trim();
+  const password = document.getElementById('login-password').value;
+  const errEl    = document.getElementById('login-error');
+  errEl.textContent = '';
+
+  if (!username || !password) { errEl.textContent = 'Please enter your username and password.'; return; }
+
+  const users = getUsers();
+  const user  = users[username.toLowerCase()];
+  if (!user) { errEl.textContent = 'No account found with that username.'; return; }
+
+  if (await hashPassword(password) !== user.hash) {
+    errEl.textContent = 'Incorrect password.'; return;
+  }
+  startSession(user.username);
+}
+
+function startSession(username) {
+  currentUser = username;
+  sessionStorage.setItem('fincity_session', username);
+  load();
+  document.getElementById('continue-btn').style.display =
+    (state.done && state.done.length > 0) ? 'inline-flex' : 'none';
+  document.getElementById('map-user').textContent = username;
+  showScreen('home');
+}
+
+function logout() {
+  sessionStorage.removeItem('fincity_session');
+  currentUser = null;
+  state = { coins: 0, done: [], current: null, phase: 'story', qIdx: 0, qAnswered: false };
+  showScreen('auth');
+}
+
+function showAuthTab(tab) {
+  document.getElementById('form-login').style.display    = tab === 'login'    ? '' : 'none';
+  document.getElementById('form-register').style.display = tab === 'register' ? '' : 'none';
+  document.getElementById('tab-login').className    = 'auth-tab' + (tab === 'login'    ? ' active' : '');
+  document.getElementById('tab-register').className = 'auth-tab' + (tab === 'register' ? ' active' : '');
+  document.getElementById('login-error').textContent = '';
+  document.getElementById('reg-error').textContent   = '';
+}
+
+function checkSession() {
+  const s = sessionStorage.getItem('fincity_session');
+  if (s) startSession(s); // restore session if tab still open
+}
+
 // ===== STATE =====
 let state = {
   coins: 0,
-  done: [],          // completed chapter ids
-  current: null,     // current chapter id
-  phase: 'story',    // 'story' | 'interactive' | 'quiz'
+  done: [],
+  current: null,
+  phase: 'story',
   qIdx: 0,
   qAnswered: false
 };
 
-function save() { localStorage.setItem('fincity', JSON.stringify(state)); }
+function save() {
+  if (currentUser) localStorage.setItem('fincity_' + currentUser.toLowerCase(), JSON.stringify(state));
+}
 function load() {
-  const d = localStorage.getItem('fincity');
+  if (!currentUser) return;
+  const d = localStorage.getItem('fincity_' + currentUser.toLowerCase());
   if (d) state = { ...state, ...JSON.parse(d) };
 }
 
@@ -21,13 +156,14 @@ function showScreen(id) {
 }
 
 function startGame() { state.done = []; state.coins = 0; save(); showMap(); }
-function showMap() { renderMap(); showScreen('map'); }
-
-// ===== HOME =====
-load();
-if (state.done && state.done.length > 0) {
-  document.getElementById('continue-btn').style.display = 'inline-flex';
+function showMap() {
+  document.getElementById('map-user').textContent = currentUser || '';
+  renderMap();
+  showScreen('map');
 }
+
+// ===== INIT =====
+runLoader(checkSession);
 
 // ===== MAP =====
 function renderMap() {
@@ -37,7 +173,8 @@ function renderMap() {
   g.innerHTML = CHAPTERS.map((ch, i) => {
     const unlocked = i === 0 || state.done.includes(CHAPTERS[i - 1].id);
     const done = state.done.includes(ch.id);
-    return `<div class="ch-card ${done ? 'done' : ''} ${unlocked ? '' : 'locked'}"
+    return `<div class="ch-card reveal ${done ? 'done' : ''} ${unlocked ? '' : 'locked'}"
+      style="transition-delay:${i * 45}ms"
       onclick="${unlocked ? `openChapter('${ch.id}')` : ''}">
       <div class="ch-num">Chapter ${ch.num}</div>
       <span class="ch-icon">${ch.icon}</span>
@@ -46,6 +183,7 @@ function renderMap() {
       ${unlocked ? '' : '<div class="lock-icon">🔒</div>'}
     </div>`;
   }).join('');
+  requestAnimationFrame(initReveal);
 }
 
 // ===== CHAPTER =====
@@ -98,14 +236,14 @@ function renderStory(ch, el) {
       <div class="panel">
         <div class="panel-label">Story</div>
         <div class="scene-box">${ch.scene}</div>
-        ${ch.dialogues.map(d => `
-          <div class="dialogue">
+        ${ch.dialogues.map((d, i) => `
+          <div class="dialogue reveal" style="transition-delay:${i * 55}ms">
             <div class="dlg-who ${d.who}">${d.who === 'finn' ? '🦊 Finn' : d.who === 'alex' ? '🧑 Alex' : '📝 Narrator'}</div>
             <div class="dlg-text ${d.who}">${d.text}</div>
           </div>
         `).join('')}
       </div>
-      <div class="panel">
+      <div class="panel reveal" style="transition-delay:120ms">
         <div class="panel-label">Key Concept</div>
         <div class="concept-box">
           <h4>💡 What You'll Learn</h4>
@@ -113,6 +251,7 @@ function renderStory(ch, el) {
         </div>
       </div>
     </div>`;
+  requestAnimationFrame(initReveal);
 }
 
 function goInteractive() {
