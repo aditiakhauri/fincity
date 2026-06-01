@@ -55,6 +55,24 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(circle
 .feature-chip span{color:var(--text);font-weight:600}
 .btn-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
 
+/* HOME DASHBOARD (returning users) */
+.home-dashboard{max-width:520px;margin:0 auto;padding:60px 20px 60px}
+.home-greeting{font-size:clamp(26px,5vw,38px);font-weight:800;background:linear-gradient(135deg,var(--accent2),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px}
+.home-coins-badge{display:inline-block;background:rgba(245,197,24,.1);border:1px solid rgba(245,197,24,.35);color:var(--gold);font-weight:700;font-size:14px;border-radius:20px;padding:5px 16px;margin-bottom:24px}
+.home-prog-wrap{width:100%;margin-bottom:22px}
+.home-prog-track{height:10px;background:var(--card2);border-radius:6px;overflow:hidden;margin-bottom:8px}
+.home-prog-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:6px;width:0%;transition:width .9s cubic-bezier(0.34,1.56,0.64,1)}
+.home-prog-text{font-size:13px;color:var(--muted);text-align:center}
+.next-ch-label{font-size:11px;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted);margin-bottom:8px;text-align:left}
+.next-ch-card{display:flex;align-items:center;gap:14px;background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:14px 18px;cursor:pointer;transition:border-color .18s,transform .15s,box-shadow .18s;margin-bottom:20px;text-align:left;width:100%}
+.next-ch-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 6px 20px rgba(124,109,250,.2)}
+.next-ch-icon{font-size:28px;flex-shrink:0}
+.next-ch-title{font-weight:700;font-size:15px;margin-bottom:2px}
+.next-ch-sub{font-size:12px;color:var(--muted)}
+.home-section-label{font-size:11px;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted);margin-bottom:10px;text-align:left}
+.home-done-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:24px}
+.done-chip{background:rgba(0,200,150,.08);border:1px solid rgba(0,200,150,.3);color:var(--text);font-size:12px;padding:4px 12px;border-radius:20px;white-space:nowrap}
+
 /* STATS BAR */
 .stats-bar{display:flex;gap:12px;justify-content:flex-end;margin-bottom:28px;flex-wrap:wrap}
 .stat-pill{background:var(--card);border:1px solid var(--border);border-radius:50px;padding:7px 18px;font-size:13px;display:flex;align-items:center;gap:8px}
@@ -63,7 +81,10 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(circle
 /* MAP */
 .map-title{font-size:30px;font-weight:800;margin-bottom:8px}
 .map-sub{color:var(--muted);font-size:14px;margin-bottom:28px}
-.chapters-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px}
+.chapters-grid{display:block;width:100%}
+.map-frame{background:linear-gradient(160deg,#0a0a24 0%,#060612 100%);border-radius:20px;border:1px solid rgba(124,109,250,.18);box-shadow:0 0 0 1px rgba(255,255,255,.03),0 8px 40px rgba(0,0,0,.6),0 0 80px rgba(80,60,200,.07),inset 0 1px 0 rgba(255,255,255,.05);overflow:hidden;padding:6px;max-width:900px;margin:0 auto}
+#map-svg{touch-action:manipulation;display:block;width:100%}
+@keyframes mapSparkle{0%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:scale(2.2)}}
 .ch-card{background:var(--card);border:2px solid var(--border);border-radius:var(--r);padding:20px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
 .ch-card:hover:not(.locked){transform:translateY(-4px);border-color:var(--accent);box-shadow:0 8px 28px rgba(124,109,250,.2)}
 .ch-card.locked{opacity:.45;cursor:not-allowed}
@@ -100,7 +121,13 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(circle
 /* STORY */
 .scene-box{background:linear-gradient(135deg,#0c0c24,#180e40);border-radius:10px;padding:20px;text-align:center;font-size:52px;margin-bottom:18px;min-height:96px;display:flex;align-items:center;justify-content:center;gap:8px}
 .dialogue{margin-bottom:12px}
-.dlg-who{font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;display:flex;align-items:center;gap:5px}
+.dlg-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.dlg-who{font-size:11px;text-transform:uppercase;letter-spacing:1px;display:flex;align-items:center;gap:5px}
+.dlg-speak-btn{background:none;border:none;cursor:pointer;font-size:14px;padding:3px 6px;border-radius:6px;color:var(--muted);opacity:0;transition:opacity .15s,color .2s,transform .15s;line-height:1;flex-shrink:0}
+.dialogue:hover .dlg-speak-btn{opacity:1}
+.dialogue:hover .dlg-speak-btn:hover{color:var(--accent2);transform:scale(1.2)}
+.dialogue.narr-speaking .dlg-speak-btn{opacity:1;color:var(--accent2);animation:speakPulse .9s ease-in-out infinite}
+@keyframes speakPulse{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.25);opacity:1}}
 .dlg-who.finn{color:var(--gold)}
 .dlg-who.alex{color:var(--accent2)}
 .dlg-who.narrator{color:var(--muted)}
@@ -167,9 +194,12 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;margin:6p
 .quiz-q-num{font-size:12px;color:var(--muted);margin-bottom:8px}
 .quiz-opts{display:flex;flex-direction:column;gap:10px}
 .quiz-opt{background:var(--card2);border:2px solid var(--border);border-radius:12px;padding:14px 18px;cursor:pointer;transition:all .18s;font-size:14px;text-align:left;width:100%;color:var(--muted)}
-.quiz-opt:hover:not([disabled]){border-color:var(--accent)}
-.quiz-opt.correct{border-color:var(--green)!important;background:rgba(0,200,150,.1)}
-.quiz-opt.wrong{border-color:var(--red)!important;background:rgba(255,96,128,.1)}
+.quiz-opt:hover:not([disabled]):not(.selected){border-color:var(--accent);color:var(--text)}
+.quiz-opt.selected{border-color:var(--accent);background:rgba(124,109,250,.12);color:var(--text)}
+.quiz-opt.correct{border-color:var(--green)!important;background:rgba(0,200,150,.1);color:var(--text)}
+.quiz-opt.wrong{border-color:var(--red)!important;background:rgba(255,96,128,.1);color:var(--text)}
+.quiz-submit-btn{width:100%;margin-top:14px}
+.quiz-submit-btn:disabled{opacity:.35;cursor:not-allowed;transform:none}
 .quiz-explain{margin-top:14px;padding:14px;background:rgba(124,109,250,.08);border:1px solid rgba(124,109,250,.25);border-radius:10px;font-size:13px;line-height:1.65;display:none}
 .quiz-explain.show{display:block}
 
@@ -226,6 +256,35 @@ canvas{border-radius:8px;display:block;width:100%}
 .lp{position:absolute;bottom:-8%;left:var(--x,50%);font-size:20px;opacity:0;animation:floatUp var(--dur,3s) ease-in var(--delay,0s) infinite}
 @keyframes floatUp{0%{transform:translateY(0) rotate(0deg);opacity:0}15%{opacity:.65}85%{opacity:.2}100%{transform:translateY(-115vh) rotate(28deg);opacity:0}}
 
+/* NARRATION BAR */
+.narr-bar{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--border);border-radius:50px;padding:7px 16px 7px 7px;margin-bottom:18px;flex-wrap:wrap}
+.narr-play-btn{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#9060f0);border:none;cursor:pointer;color:#fff;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;line-height:1}
+.narr-play-btn:hover{transform:scale(1.1);box-shadow:0 4px 16px rgba(124,109,250,.5)}
+.narr-play-btn.active{background:linear-gradient(135deg,var(--green),#00a87a)}
+.narr-stop-btn{width:28px;height:28px;border-radius:50%;background:var(--card2);border:1px solid var(--border);cursor:pointer;color:var(--muted);font-size:10px;display:flex;align-items:center;justify-content:center;transition:all .18s;flex-shrink:0}
+.narr-stop-btn:hover{border-color:var(--red);color:var(--red)}
+.narr-waveform{display:flex;gap:2.5px;align-items:center;height:22px;flex-shrink:0}
+.narr-waveform span{width:3px;background:var(--border);border-radius:2px;height:5px;transition:height .15s,background .2s}
+.narr-waveform.active.finn     span{background:var(--gold)}
+.narr-waveform.active.alex     span{background:var(--accent2)}
+.narr-waveform.active.narrator span{background:var(--muted)}
+.narr-waveform.active span:nth-child(1){animation:nw .65s ease-in-out infinite 0s}
+.narr-waveform.active span:nth-child(2){animation:nw .65s ease-in-out infinite .13s}
+.narr-waveform.active span:nth-child(3){animation:nw .65s ease-in-out infinite .26s}
+.narr-waveform.active span:nth-child(4){animation:nw .65s ease-in-out infinite .39s}
+.narr-waveform.active span:nth-child(5){animation:nw .65s ease-in-out infinite .52s}
+@keyframes nw{0%,100%{height:4px}50%{height:20px}}
+.narr-status{flex:1;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.narr-select{background:var(--card2);border:1px solid var(--border);border-radius:20px;padding:6px 10px;color:var(--text);font-size:12px;cursor:pointer;outline:none;font-family:inherit;flex-shrink:0;max-width:160px}
+.narr-select:focus{border-color:var(--accent)}
+.dialogue.narr-speaking{background:rgba(124,109,250,.06);border-radius:10px;margin:-4px;padding:4px;transition:background .3s}
+.dialogue.narr-speaking .dlg-text{border-left-width:4px!important}
+.narr-ai-btn{background:var(--card2);border:1px solid var(--border);border-radius:20px;padding:6px 12px;cursor:pointer;font-size:12px;font-weight:600;color:var(--muted);transition:all .18s;flex-shrink:0;font-family:inherit}
+.narr-ai-btn:hover{border-color:var(--accent2);color:var(--accent2)}
+.narr-ai-btn.active{background:rgba(0,200,150,.12);border-color:var(--green);color:var(--green)}
+.narr-ai-panel{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:16px;display:none;animation:slideUp .25s ease}
+.narr-ai-panel.show{display:block}
+
 /* SCROLL REVEAL */
 .reveal{opacity:0;transform:translateY(30px);transition:opacity .55s ease,transform .55s cubic-bezier(.175,.885,.32,1.275)}
 .reveal.visible{opacity:1;transform:translateY(0)}
@@ -253,6 +312,26 @@ canvas{border-radius:8px;display:block;width:100%}
 ::-webkit-scrollbar{width:5px}
 ::-webkit-scrollbar-track{background:var(--bg)}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+/* SSO BUTTON */
+.sso-section{margin-top:22px}
+.sso-divider{display:flex;align-items:center;gap:10px;margin-bottom:16px;color:var(--muted);font-size:12px}
+.sso-divider::before,.sso-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+.sso-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;padding:12px 20px;background:var(--card2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;font-weight:600;cursor:pointer;transition:all .18s;font-family:inherit}
+.sso-btn:hover{border-color:var(--accent);background:rgba(124,109,250,.08)}
+
+/* SESSION WARNING BANNER */
+#session-warn-banner{position:fixed;bottom:0;left:0;right:0;background:rgba(245,197,24,.08);border-top:1px solid rgba(245,197,24,.25);padding:11px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:13px;color:var(--gold);transform:translateY(100%);transition:transform .35s ease;z-index:9990;backdrop-filter:blur(6px)}
+#session-warn-banner.show{transform:translateY(0)}
+
+/* SESSION EXPIRED OVERLAY */
+#session-expired-overlay{position:fixed;inset:0;background:rgba(7,7,26,.93);backdrop-filter:blur(10px);z-index:99997;display:none;align-items:center;justify-content:center}
+#session-expired-overlay.show{display:flex}
+.expired-card{background:var(--card);border:1px solid rgba(124,109,250,.3);border-radius:var(--r);padding:48px 40px;text-align:center;max-width:380px;width:90%;animation:slideUp .4s ease}
+@keyframes slideUp{from{transform:translateY(28px);opacity:0}to{transform:translateY(0);opacity:1}}
+.expired-icon{font-size:60px;margin-bottom:14px}
+.expired-title{font-size:26px;font-weight:800;margin-bottom:10px}
+.expired-sub{color:var(--muted);font-size:14px;line-height:1.7;margin-bottom:28px}
 
 /* MINING BUTTON */
 .mine-btn{font-size:52px;background:none;border:3px solid var(--accent);border-radius:50%;width:110px;height:110px;cursor:pointer;transition:all .1s;display:flex;align-items:center;justify-content:center;margin:0 auto}
@@ -356,13 +435,28 @@ canvas{border-radius:8px;display:block;width:100%}
         <div class="auth-error" id="reg-error"></div>
         <button class="btn btn-primary" style="width:100%" onclick="handleRegister()">Create Account →</button>
       </div>
+
+      <!-- SSO -->
+      <div class="sso-section">
+        <div class="sso-divider"><span>or continue with</span></div>
+        <button class="sso-btn" onclick="signInWithGoogle()">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908C16.658 14.013 17.64 11.705 17.64 9.2z" fill="#4285F4"/>
+            <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/>
+            <path d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
+            <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
+          </svg>
+          Continue with Google
+        </button>
+      </div>
     </div>
   </div>
 </div>
 
 <!-- HOME -->
 <div id="screen-home" class="screen">
-  <div class="home-center">
+  <!-- First-time / new game view -->
+  <div class="home-center" id="home-new-user">
     <span class="home-logo">🏙️</span>
     <div class="home-title">FinCity</div>
     <div class="home-sub">Learn every financial concept through story & play</div>
@@ -374,9 +468,32 @@ canvas{border-radius:8px;display:block;width:100%}
     </div>
     <div class="btn-row">
       <button class="btn btn-primary btn-lg" onclick="startGame()">🚀 Start Adventure</button>
-      <button class="btn btn-ghost btn-lg" id="continue-btn" onclick="showMap()" style="display:none">▶ Continue</button>
     </div>
     <div style="margin-top:40px;color:var(--muted);font-size:13px">Guide: Finn 🦊 &nbsp;·&nbsp; You: Alex 🧑 &nbsp;·&nbsp; City: FinCity 🏙️</div>
+  </div>
+
+  <!-- Returning user progress dashboard -->
+  <div class="home-dashboard" id="home-welcome" style="display:none">
+    <div class="home-greeting" id="home-greeting">Welcome back!</div>
+    <div class="home-coins-badge" id="home-coins-display">🪙 0 FinCoins</div>
+    <div class="home-prog-wrap">
+      <div class="home-prog-track">
+        <div class="home-prog-fill" id="home-prog-bar"></div>
+      </div>
+      <div class="home-prog-text" id="home-prog-text">0 of 15 chapters complete</div>
+    </div>
+    <div id="home-next-ch"></div>
+    <div id="home-done-section" style="display:none">
+      <div class="home-section-label">Completed</div>
+      <div class="home-done-chips" id="home-done-chips"></div>
+    </div>
+    <div class="btn-row" style="margin-top:8px">
+      <button class="btn btn-primary btn-lg" id="continue-btn" onclick="continueGame()">▶ Continue</button>
+      <button class="btn btn-ghost btn-lg" onclick="showMap()">🗺️ Map</button>
+    </div>
+    <div style="margin-top:18px">
+      <button class="btn btn-ghost btn-sm" onclick="startGame()" style="color:var(--muted);font-size:12px;opacity:0.65">🔄 Start Over</button>
+    </div>
   </div>
 </div>
 
@@ -389,7 +506,7 @@ canvas{border-radius:8px;display:block;width:100%}
     <button class="btn btn-ghost btn-sm" onclick="logout()" style="padding:7px 16px;font-size:12px">Sign Out</button>
   </div>
   <div class="map-title">🗺️ FinCity Map</div>
-  <div class="map-sub">Complete each chapter to unlock the next. Earn FinCoins along the way!</div>
+  <div class="map-sub">Navigate the city — complete each destination to unlock the next branch</div>
   <div class="chapters-grid" id="chapters-grid"></div>
 </div>
 
@@ -416,7 +533,24 @@ canvas{border-radius:8px;display:block;width:100%}
   <span class="notif-text" id="notif-text"></span>
 </div>
 
+<!-- SESSION WARNING BANNER -->
+<div id="session-warn-banner">
+  <span>⏱️ Session expires in <b id="warn-time">2</b> min — move your mouse or click to stay active</span>
+  <button class="btn btn-ghost btn-sm" onclick="_touchActivity()" style="flex-shrink:0">Keep me signed in</button>
+</div>
+
+<!-- SESSION EXPIRED OVERLAY -->
+<div id="session-expired-overlay">
+  <div class="expired-card">
+    <div class="expired-icon">⏱️</div>
+    <div class="expired-title">Session Expired</div>
+    <p class="expired-sub">You've been inactive for 15 minutes.<br>Please sign in again to continue.</p>
+    <button class="btn btn-primary" onclick="dismissExpired()">Sign In Again</button>
+  </div>
+</div>
+
 <script src="chapters.js"></script>
 <script src="game.js"></script>
+<script async src="https://accounts.google.com/gsi/client" onload="initGoogleSSO()"></script>
 </body>
 </html>

@@ -25,8 +25,376 @@ function initReveal() {
   document.querySelectorAll('.reveal:not(.visible), .reveal-left:not(.visible)').forEach(el => obs.observe(el));
 }
 
+// ===== NARRATION =====
+const NARR_LANGS = [
+  { code:'en', label:'🇺🇸 English',    speech:'en-US' },
+  { code:'es', label:'🇪🇸 Español',    speech:'es-ES' },
+  { code:'fr', label:'🇫🇷 Français',   speech:'fr-FR' },
+  { code:'de', label:'🇩🇪 Deutsch',    speech:'de-DE' },
+  { code:'it', label:'🇮🇹 Italiano',   speech:'it-IT' },
+  { code:'pt', label:'🇧🇷 Português',  speech:'pt-BR' },
+  { code:'ja', label:'🇯🇵 日本語',      speech:'ja-JP' },
+  { code:'zh', label:'🇨🇳 中文',        speech:'zh-CN' },
+  { code:'ko', label:'🇰🇷 한국어',      speech:'ko-KR' },
+  { code:'hi', label:'🇮🇳 हिन्दी',       speech:'hi-IN' },
+  { code:'ar', label:'🇸🇦 العربية',     speech:'ar-SA' },
+  { code:'ru', label:'🇷🇺 Русский',     speech:'ru-RU' },
+];
+
+const NARR_PROFILES = {
+  finn:     { pitch: 0.92, rate: 0.87, pause: 650 },
+  alex:     { pitch: 1.12, rate: 0.96, pause: 550 },
+  narrator: { pitch: 0.83, rate: 0.81, pause: 850 },
+};
+
+// ElevenLabs voice IDs per character
+const ELEVEN_VOICES = {
+  narrator: 'pNInz6obpgDQGcFmaJgB',  // Adam  — deep, authoritative
+  finn:     'ErXwobaYiN019PkySvjV',  // Antoni — warm, friendly
+  alex:     'MF3mGyEYCl7XYWbV9V6O',  // Elli   — young, energetic
+};
+
+const _nc       = {};     // translation cache
+const _elCache  = {};     // ElevenLabs audio cache: voiceId||text → blob URL
+let   _ns       = { playing: false, idx: 0, dlgs: [], lang: 'en', timer: null };
+const _EL_DEFAULT = 'sk_e45db2093c7934b60492dcc4db262eb6fc68acb3e69b6839';
+let   _elKey      = sessionStorage.getItem('fincity_el_key') || _EL_DEFAULT;
+if (!sessionStorage.getItem('fincity_el_key')) sessionStorage.setItem('fincity_el_key', _EL_DEFAULT);
+let   _curAudio = null;   // currently playing <Audio> for ElevenLabs
+
+// ---------- Translation ----------
+async function _ntranslate(text, lang) {
+  if (lang === 'en') return text;
+  const k = lang + '||' + text;
+  if (_nc[k]) return _nc[k];
+  try {
+    const r = await fetch(
+      `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text.slice(0, 450))}&langpair=en|${lang}`
+    );
+    const d = await r.json();
+    _nc[k] = d.responseData?.translatedText || text;
+    return _nc[k];
+  } catch { return text; }
+}
+
+// ---------- Web Speech helpers ----------
+function _nBestVoice(speechLang) {
+  const voices = window.speechSynthesis?.getVoices() || [];
+  const base   = speechLang.split('-')[0];
+  const pool   = voices.filter(v => v.lang.startsWith(base));
+  if (!pool.length) return null;
+  return pool.sort((a, b) => {
+    const s = v => {
+      const n = v.name.toLowerCase();
+      return (!n.includes('compact') ? 3 : 0) + (n.includes('neural')   ? 5 : 0)
+           + (n.includes('premium')  ? 4 : 0) + (n.includes('enhanced') ? 3 : 0)
+           + (!v.localService        ? 2 : 0);
+    };
+    return s(b) - s(a);
+  })[0];
+}
+
+// Sentence-chunked Web Speech — each sentence spoken separately with varied prosody
+// so it sounds far more natural than one flat utterance per dialogue line.
+async function _nWebSpeak(text, prof, langObj, nextIdx) {
+  const voice     = _nBestVoice(langObj.speech);
+  const sentences = (text.match(/[^.!?…]+[.!?…]+(?:\s|$)|[^.!?…]+$/g) || [text])
+                      .map(s => s.trim()).filter(Boolean);
+
+  window.speechSynthesis.cancel();
+  for (let i = 0; i < sentences.length; i++) {
+    if (!_ns.playing) return;
+    const s   = sentences[i];
+    const isQ = s.endsWith('?');
+    const isE = s.endsWith('!');
+    await new Promise(resolve => {
+      const utt  = new SpeechSynthesisUtterance(s);
+      if (voice)  utt.voice  = voice;
+      utt.lang   = langObj.speech;
+      // Fixed pitch per character — only questions raise pitch slightly
+      utt.pitch  = Math.max(0.1, prof.pitch + (isQ ? 0.1 : 0));
+      // Fixed rate per character — slightly slower on long sentences
+      utt.rate   = Math.max(0.1, prof.rate + (s.length > 80 ? -0.04 : 0));
+      utt.volume = 1;
+      utt.onend  = resolve;
+      utt.onerror = resolve;
+      window.speechSynthesis.speak(utt);
+    });
+    // Natural inter-sentence breath gap
+    if (i < sentences.length - 1 && _ns.playing)
+      await new Promise(r => setTimeout(r, 55 + Math.random() * 105));
+  }
+  if (_ns.playing) _ns.timer = setTimeout(() => _nSpeak(nextIdx), prof.pause);
+}
+
+// ---------- ElevenLabs ----------
+function narrToggleAIPanel() {
+  const p = document.getElementById('narr-ai-panel');
+  if (!p) return;
+  const opening = !p.classList.contains('show');
+  p.classList.toggle('show');
+  if (opening && _elKey) document.getElementById('el-api-key').value = '•'.repeat(16);
+}
+
+function narrActivateAI() {
+  const val = document.getElementById('el-api-key')?.value.trim() || '';
+  if (!val || val.startsWith('•')) return;
+  _elKey = val;
+  sessionStorage.setItem('fincity_el_key', val);
+  const btn = document.getElementById('narr-ai-btn');
+  if (btn) { btn.textContent = '✨ AI ✓'; btn.classList.add('active'); }
+  document.getElementById('narr-ai-panel')?.classList.remove('show');
+  notify('✨ ElevenLabs AI voices activated!', 'ok');
+}
+
+function _narrDeactivateAI() {
+  _elKey = '';
+  sessionStorage.removeItem('fincity_el_key');
+  const btn = document.getElementById('narr-ai-btn');
+  if (btn) { btn.textContent = '✨ AI'; btn.classList.remove('active'); }
+}
+
+async function _elevenSpeak(text, character) {
+  const voiceId  = ELEVEN_VOICES[character] || ELEVEN_VOICES.narrator;
+  const cacheKey = voiceId + '||' + text;
+
+  if (!_elCache[cacheKey]) {
+    const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
+      method: 'POST',
+      headers: { 'xi-api-key': _elKey, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        text,
+        model_id: 'eleven_turbo_v2_5',
+        voice_settings: {
+          stability:         character === 'narrator' ? 0.58 : 0.42,
+          similarity_boost:  0.82,
+          style:             character === 'narrator' ? 0.22 : 0.58,
+          use_speaker_boost: true,
+        },
+      }),
+    });
+    if (!res.ok) { _narrDeactivateAI(); throw new Error('ElevenLabs ' + res.status); }
+    _elCache[cacheKey] = URL.createObjectURL(await res.blob());
+  }
+
+  return new Promise((resolve, reject) => {
+    const audio = new Audio(_elCache[cacheKey]);
+    _curAudio   = audio;
+    audio.onended  = () => { _curAudio = null; resolve(); };
+    audio.onerror  = () => { _curAudio = null; reject(new Error('audio error')); };
+    audio.play().catch(reject);
+  });
+}
+
+// ---------- Core speak loop ----------
+async function _nSpeak(idx) {
+  if (!_ns.playing || idx >= _ns.dlgs.length) { narrStop(); return; }
+  _ns.idx = idx;
+  const d = _ns.dlgs[idx];
+
+  // Highlight + scroll
+  document.querySelectorAll('.dialogue').forEach((el, i) => {
+    el.classList.toggle('narr-speaking', i === idx);
+    if (i === idx) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  });
+
+  // Status & waveform
+  const who = d.who === 'finn' ? '🦊 Finn' : d.who === 'alex' ? '🧑 Alex' : '📝 Narrator';
+  const sEl = document.getElementById('narr-status');
+  if (sEl) sEl.textContent = `${who} is speaking…`;
+  const wEl = document.getElementById('narr-wave');
+  if (wEl) wEl.className = `narr-waveform active ${d.who}`;
+
+  // Pre-translate next lines in background
+  for (let i = idx + 1; i < Math.min(idx + 3, _ns.dlgs.length); i++)
+    _ntranslate(_ns.dlgs[i].text, _ns.lang);
+
+  const text    = await _ntranslate(d.text, _ns.lang);
+  const prof    = NARR_PROFILES[d.who] || NARR_PROFILES.narrator;
+  const langObj = NARR_LANGS.find(l => l.code === _ns.lang) || NARR_LANGS[0];
+
+  if (_elKey) {
+    try {
+      await _elevenSpeak(text, d.who);
+      if (_ns.playing) _ns.timer = setTimeout(() => _nSpeak(idx + 1), prof.pause);
+    } catch { await _nWebSpeak(text, prof, langObj, idx + 1); }
+  } else {
+    await _nWebSpeak(text, prof, langObj, idx + 1);
+  }
+}
+
+// ---------- Controls ----------
+function narrToggle() {
+  if (_ns.playing) {
+    _ns.playing = false;
+    if (_curAudio) { _curAudio.pause(); }
+    else           { window.speechSynthesis.pause(); }
+    const b = document.getElementById('narr-play-btn');
+    if (b) { b.textContent = '▶'; b.classList.remove('active'); }
+    document.getElementById('narr-wave')?.classList.remove('active');
+    const s = document.getElementById('narr-status');
+    if (s) s.textContent = 'Paused — tap ▶ to continue';
+  } else {
+    _ns.playing = true;
+    const b = document.getElementById('narr-play-btn');
+    if (b) { b.textContent = '⏸'; b.classList.add('active'); }
+    if (_curAudio)                       { _curAudio.play(); }
+    else if (window.speechSynthesis.paused) { window.speechSynthesis.resume(); }
+    else                                 { _nSpeak(_ns.idx); }
+  }
+}
+
+function narrStop() {
+  _ns.playing = false;
+  _ns.idx     = 0;
+  if (_ns.timer) { clearTimeout(_ns.timer); _ns.timer = null; }
+  if (_curAudio) { _curAudio.pause(); _curAudio = null; }
+  window.speechSynthesis?.cancel();
+  const b = document.getElementById('narr-play-btn');
+  if (b) { b.textContent = '▶'; b.classList.remove('active'); }
+  const w = document.getElementById('narr-wave');
+  if (w)  w.className = 'narr-waveform';
+  const s = document.getElementById('narr-status');
+  if (s)  s.textContent = '🔊 Tap to listen';
+  document.querySelectorAll('.dialogue').forEach(el => el.classList.remove('narr-speaking'));
+}
+
+function narrChangeLang(code) {
+  const was = _ns.playing;
+  narrStop();
+  _ns.lang = code;
+  if (was) setTimeout(narrToggle, 150);
+}
+
+function narrFrom(idx) {
+  // Clicking the active line's button stops narration; any other line starts from there
+  if (_ns.playing && _ns.idx === idx) { narrStop(); return; }
+  narrStop();
+  _ns.idx = idx;
+  _ns.playing = true;
+  const b = document.getElementById('narr-play-btn');
+  if (b) { b.textContent = '⏸'; b.classList.add('active'); }
+  _nSpeak(idx);
+}
+
+function narrInitBar(dialogues) {
+  _ns.dlgs = dialogues; _ns.playing = false; _ns.idx = 0;
+  if (_ns.timer) { clearTimeout(_ns.timer); _ns.timer = null; }
+  if (_curAudio) { _curAudio.pause(); _curAudio = null; }
+  window.speechSynthesis?.cancel();
+  const sel = document.getElementById('narr-lang');
+  if (sel) sel.value = _ns.lang;
+  // Reflect ElevenLabs active state in button
+  const btn = document.getElementById('narr-ai-btn');
+  if (btn) { btn.textContent = _elKey ? '✨ AI ✓' : '✨ AI'; btn.classList.toggle('active', !!_elKey); }
+}
+
+document.addEventListener('visibilitychange', () => {
+  if (!window.speechSynthesis) return;
+  if (document.hidden  && _ns.playing) { if (_curAudio) _curAudio.pause(); else window.speechSynthesis.pause(); }
+  if (!document.hidden && _ns.playing) { if (_curAudio) _curAudio.play();  else window.speechSynthesis.resume(); }
+});
+
+// ===== CONFIG =====
+// Paste your Google OAuth 2.0 Client ID here to enable Google SSO.
+// Get one at: https://console.cloud.google.com → APIs & Services → Credentials
+const GOOGLE_CLIENT_ID = '';
+
+// ===== SESSION TIMEOUT =====
+const _IDLE_LIMIT  = 15 * 60 * 1000;   // 15 min → force logout
+const _IDLE_WARN   = 13 * 60 * 1000;   // 13 min → show warning
+let _idleTimer     = null;
+let _warnFired     = false;
+
+function _touchActivity() {
+  if (!currentUser) return;
+  sessionStorage.setItem('fincity_activity', Date.now().toString());
+  if (_warnFired) {
+    _warnFired = false;
+    document.getElementById('session-warn-banner').classList.remove('show');
+  }
+}
+
+function _startActivityWatch() {
+  _warnFired = false;
+  _touchActivity();
+  ['mousemove','click','keydown','scroll','touchstart']
+    .forEach(ev => document.addEventListener(ev, _touchActivity, { passive: true }));
+  _idleTimer = setInterval(_checkIdle, 20_000);
+}
+
+function _stopActivityWatch() {
+  ['mousemove','click','keydown','scroll','touchstart']
+    .forEach(ev => document.removeEventListener(ev, _touchActivity));
+  if (_idleTimer) { clearInterval(_idleTimer); _idleTimer = null; }
+  document.getElementById('session-warn-banner')?.classList.remove('show');
+}
+
+function _checkIdle() {
+  if (!currentUser) return;
+  const last = parseInt(sessionStorage.getItem('fincity_activity') || '0');
+  const idle  = Date.now() - last;
+
+  if (idle >= _IDLE_LIMIT) {
+    _stopActivityWatch();
+    sessionStorage.removeItem('fincity_session');
+    sessionStorage.removeItem('fincity_activity');
+    currentUser = null; currentUserKey = null;
+    state = { coins: 0, done: [], current: null, phase: 'story', qIdx: 0, qAnswered: false };
+    document.getElementById('session-expired-overlay').classList.add('show');
+    return;
+  }
+  if (idle >= _IDLE_WARN && !_warnFired) {
+    _warnFired = true;
+    const minsLeft = Math.ceil((_IDLE_LIMIT - idle) / 60000);
+    document.getElementById('warn-time').textContent = minsLeft;
+    document.getElementById('session-warn-banner').classList.add('show');
+  }
+}
+
+function dismissExpired() {
+  document.getElementById('session-expired-overlay').classList.remove('show');
+  showScreen('auth');
+}
+
+// ===== GOOGLE SSO =====
+function initGoogleSSO() {
+  if (!GOOGLE_CLIENT_ID || !window.google?.accounts?.id) return;
+  google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: handleGoogleCredential });
+}
+
+function signInWithGoogle() {
+  if (!GOOGLE_CLIENT_ID) {
+    document.getElementById('login-error').textContent =
+      'Google SSO not configured — add your Client ID in game.js.';
+    return;
+  }
+  if (!window.google?.accounts?.id) {
+    document.getElementById('login-error').textContent = 'Google SDK not ready, please wait a moment.';
+    return;
+  }
+  google.accounts.id.prompt();
+}
+
+async function handleGoogleCredential(response) {
+  try {
+    const b64 = response.credential.split('.')[1].replace(/-/g,'+').replace(/_/g,'/');
+    const { sub, email, name, picture } = JSON.parse(atob(b64));
+    const storageKey = 'sso_google_' + sub;
+    const users = getUsers();
+    if (!users[storageKey]) {
+      users[storageKey] = { username: name || email, email, picture, type: 'google', sub, created: Date.now() };
+      saveUsers(users);
+    }
+    startSession(storageKey, users[storageKey].username);
+  } catch {
+    document.getElementById('login-error').textContent = 'Google sign-in failed. Please try again.';
+  }
+}
+
 // ===== AUTH =====
-let currentUser = null;
+let currentUser    = null;   // display name shown in UI
+let currentUserKey = null;   // key used for localStorage
 
 async function hashPassword(pw) {
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pw));
@@ -78,7 +446,7 @@ async function handleRegister() {
 
   users[username.toLowerCase()] = { username, hash: await hashPassword(password), created: Date.now() };
   saveUsers(users);
-  startSession(username);
+  startSession(username.toLowerCase(), username);
 }
 
 async function handleLogin() {
@@ -96,22 +464,98 @@ async function handleLogin() {
   if (await hashPassword(password) !== user.hash) {
     errEl.textContent = 'Incorrect password.'; return;
   }
-  startSession(user.username);
+  startSession(username.toLowerCase(), user.username);
 }
 
-function startSession(username) {
-  currentUser = username;
-  sessionStorage.setItem('fincity_session', username);
+function startSession(key, displayName) {
+  currentUserKey = key;
+  currentUser    = displayName || key;
+  sessionStorage.setItem('fincity_session', JSON.stringify({ key, displayName: currentUser }));
   load();
-  document.getElementById('continue-btn').style.display =
-    (state.done && state.done.length > 0) ? 'inline-flex' : 'none';
-  document.getElementById('map-user').textContent = username;
+  _renderHomeProgress();
+  document.getElementById('map-user').textContent = currentUser;
+  _startActivityWatch();
   showScreen('home');
 }
 
+function _renderHomeProgress() {
+  const done  = state.done || [];
+  const total = CHAPTERS.length;
+  const pct   = total > 0 ? Math.round((done.length / total) * 100) : 0;
+
+  const nextIdx = CHAPTERS.findIndex(ch => !done.includes(ch.id));
+  const nextCh  = nextIdx >= 0 ? CHAPTERS[nextIdx] : null;
+
+  const newUserEl  = document.getElementById('home-new-user');
+  const dashEl     = document.getElementById('home-welcome');
+
+  if (done.length === 0) {
+    // New / fresh user — show original welcome
+    newUserEl.style.display = '';
+    dashEl.style.display    = 'none';
+    return;
+  }
+
+  // Returning user — show progress dashboard
+  newUserEl.style.display = 'none';
+  dashEl.style.display    = '';
+
+  document.getElementById('home-greeting').textContent =
+    done.length === total ? `You mastered FinCity, ${currentUser}!` : `Welcome back, ${currentUser}!`;
+  document.getElementById('home-coins-display').textContent = `🪙 ${state.coins} FinCoins`;
+
+  // Progress bar — set via rAF so CSS transition fires
+  const barEl = document.getElementById('home-prog-bar');
+  barEl.style.width = '0%';
+  requestAnimationFrame(() => requestAnimationFrame(() => { barEl.style.width = pct + '%'; }));
+  document.getElementById('home-prog-text').textContent =
+    `${done.length} of ${total} chapters complete${done.length === total ? ' — all done! 🏆' : ''}`;
+
+  // Next chapter card
+  const nextEl = document.getElementById('home-next-ch');
+  if (nextCh) {
+    nextEl.innerHTML = `
+      <div class="next-ch-label">Up next</div>
+      <div class="next-ch-card" onclick="continueGame()">
+        <span class="next-ch-icon">${nextCh.icon}</span>
+        <div style="flex:1">
+          <div class="next-ch-title">${nextCh.title}</div>
+          <div class="next-ch-sub">Chapter ${nextCh.num} · ${nextCh.tag}</div>
+        </div>
+        <span style="color:var(--accent);font-size:20px">→</span>
+      </div>`;
+    document.getElementById('continue-btn').style.display = 'inline-flex';
+  } else {
+    nextEl.innerHTML = `<div class="info-box green" style="text-align:center;margin-bottom:20px">🏆 All 15 chapters mastered!</div>`;
+    document.getElementById('continue-btn').style.display = 'none';
+  }
+
+  // Completed chapters chips
+  const doneSection = document.getElementById('home-done-section');
+  const chipsEl     = document.getElementById('home-done-chips');
+  if (done.length > 0) {
+    chipsEl.innerHTML = done.map(id => {
+      const ch = CHAPTERS.find(c => c.id === id);
+      return ch ? `<span class="done-chip">${ch.icon} ${ch.title}</span>` : '';
+    }).join('');
+    doneSection.style.display = '';
+  } else {
+    doneSection.style.display = 'none';
+  }
+}
+
+function continueGame() {
+  const done  = state.done || [];
+  const nextCh = CHAPTERS.find(ch => !done.includes(ch.id));
+  if (nextCh) openChapter(nextCh.id);
+  else showMap();
+}
+
 function logout() {
+  _stopActivityWatch();
   sessionStorage.removeItem('fincity_session');
-  currentUser = null;
+  sessionStorage.removeItem('fincity_activity');
+  currentUser = null; currentUserKey = null;
   state = { coins: 0, done: [], current: null, phase: 'story', qIdx: 0, qAnswered: false };
   showScreen('auth');
 }
@@ -126,8 +570,13 @@ function showAuthTab(tab) {
 }
 
 function checkSession() {
-  const s = sessionStorage.getItem('fincity_session');
-  if (s) startSession(s); // restore session if tab still open
+  const raw = sessionStorage.getItem('fincity_session');
+  if (!raw) return;
+  try {
+    const { key, displayName } = JSON.parse(raw);
+    if (key) { startSession(key, displayName); return; }
+  } catch {}
+  startSession(raw, raw); // legacy: raw was just a username string
 }
 
 // ===== STATE =====
@@ -141,11 +590,11 @@ let state = {
 };
 
 function save() {
-  if (currentUser) localStorage.setItem('fincity_' + currentUser.toLowerCase(), JSON.stringify(state));
+  if (currentUserKey) localStorage.setItem('fincity_' + currentUserKey, JSON.stringify(state));
 }
 function load() {
-  if (!currentUser) return;
-  const d = localStorage.getItem('fincity_' + currentUser.toLowerCase());
+  if (!currentUserKey) return;
+  const d = localStorage.getItem('fincity_' + currentUserKey);
   if (d) state = { ...state, ...JSON.parse(d) };
 }
 
@@ -155,39 +604,286 @@ function showScreen(id) {
   document.getElementById('screen-' + id).classList.add('active');
 }
 
-function startGame() { state.done = []; state.coins = 0; save(); showMap(); }
+function startGame() {
+  if (state.done && state.done.length > 0) {
+    if (!confirm(`Start over? This will reset your ${state.done.length} completed chapter${state.done.length > 1 ? 's' : ''} and ${state.coins} FinCoins.`)) return;
+  }
+  state.done = []; state.coins = 0; state.current = null;
+  save();
+  showMap();
+}
 function showMap() {
   document.getElementById('map-user').textContent = currentUser || '';
   renderMap();
   showScreen('map');
+  if (_bagAnimPending) {
+    const { from, to } = _bagAnimPending;
+    _bagAnimPending = null;
+    // Give the SVG a moment to fully render before starting animation
+    setTimeout(() => _triggerBagAnim(from, to), 700);
+  }
 }
 
 // ===== INIT =====
 runLoader(checkSession);
 
 // ===== MAP =====
+
+const MAP_PATH_D = "M120,90 L450,90 L780,90 C870,90 870,240 780,240 L450,240 L120,240 C30,240 30,390 120,390 L450,390 L780,390 C870,390 870,540 780,540 L450,540 L120,540 C30,540 30,690 120,690 L450,690 L780,690";
+
+const MAP_POS = [
+  [120,90],[450,90],[780,90],
+  [780,240],[450,240],[120,240],
+  [120,390],[450,390],[780,390],
+  [780,540],[450,540],[120,540],
+  [120,690],[450,690],[780,690]
+];
+
+const MAP_OFFSETS = [0,0.085,0.170,0.207,0.293,0.378,0.415,0.500,0.585,0.623,0.708,0.793,0.830,0.915,1.000];
+
+let _bagAnimPending = null;
+
 function renderMap() {
-  const g = document.getElementById('chapters-grid');
   document.getElementById('map-coins').textContent = state.coins;
-  document.getElementById('map-prog').textContent = state.done.length + '/15';
-  g.innerHTML = CHAPTERS.map((ch, i) => {
+  document.getElementById('map-prog').textContent  = state.done.length + '/15';
+
+  const nodesHTML = CHAPTERS.map((ch, i) => {
+    const [cx, cy] = MAP_POS[i];
+    const done     = state.done.includes(ch.id);
     const unlocked = i === 0 || state.done.includes(CHAPTERS[i - 1].id);
-    const done = state.done.includes(ch.id);
-    return `<div class="ch-card reveal ${done ? 'done' : ''} ${unlocked ? '' : 'locked'}"
-      style="transition-delay:${i * 45}ms"
-      onclick="${unlocked ? `openChapter('${ch.id}')` : ''}">
-      <div class="ch-num">Chapter ${ch.num}</div>
-      <span class="ch-icon">${ch.icon}</span>
-      <div class="ch-title">${ch.title}</div>
-      <div class="ch-tag">${ch.tag}</div>
-      ${unlocked ? '' : '<div class="lock-icon">🔒</div>'}
-    </div>`;
+    const isNext   = !done && unlocked;
+    const r        = 36;
+    const label    = ch.title.length > 14 ? ch.title.slice(0, 13) + '…' : ch.title;
+    const click    = unlocked ? `onclick="openChapter('${ch.id}')"` : '';
+    const cursor   = unlocked ? 'pointer' : 'default';
+
+    if (done) return `
+      <g style="cursor:${cursor}" ${click}>
+        <circle cx="${cx}" cy="${cy}" r="${r+18}" fill="rgba(0,200,150,.04)" stroke="none"/>
+        <circle cx="${cx}" cy="${cy}" r="${r+9}"  fill="rgba(0,200,150,.07)" stroke="rgba(0,200,150,.18)" stroke-width="1"/>
+        <circle cx="${cx}" cy="${cy}" r="${r}"    fill="url(#mn-done)" stroke="#00c896" stroke-width="2.5"/>
+        <circle cx="${cx}" cy="${cy}" r="${r-7}"  fill="none" stroke="rgba(0,200,150,.2)" stroke-width="1"/>
+        <text x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="middle" font-size="20">${ch.icon}</text>
+        <circle cx="${cx+r-3}" cy="${cy-r+3}" r="12" fill="url(#mn-gold)"/>
+        <text x="${cx+r-3}" y="${cy-r+3}" text-anchor="middle" dominant-baseline="middle" font-size="10" fill="#1a0e00" font-weight="900">✓</text>
+        <text x="${cx}" y="${cy+r+17}" text-anchor="middle" font-size="12.5" fill="#3dffa0" font-weight="700" font-family="system-ui,sans-serif">${label}</text>
+        <text x="${cx}" y="${cy+r+32}" text-anchor="middle" font-size="10"   fill="#1e7a50" font-family="system-ui,sans-serif">Ch.${ch.num}</text>
+      </g>`;
+
+    if (isNext) return `
+      <g style="cursor:pointer" ${click}>
+        <circle cx="${cx}" cy="${cy}" r="${r+22}" fill="rgba(124,109,250,.03)" stroke="rgba(124,109,250,.15)" stroke-width="1">
+          <animate attributeName="r"       values="${r+14};${r+26};${r+14}" dur="2.4s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values=".8;.08;.8"               dur="2.4s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="${cx}" cy="${cy}" r="${r+10}" fill="rgba(124,109,250,.06)" stroke="rgba(124,109,250,.3)" stroke-width="1.5">
+          <animate attributeName="r"       values="${r+6};${r+14};${r+6}"   dur="2.4s" begin="0.5s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values=".9;.15;.9"               dur="2.4s" begin="0.5s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="${cx}" cy="${cy}" r="${r}"   fill="url(#mn-next)" stroke="#8a78ff" stroke-width="2.5"/>
+        <circle cx="${cx}" cy="${cy}" r="${r-7}" fill="none" stroke="rgba(160,144,255,.25)" stroke-width="1"/>
+        <text x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="middle" font-size="20">${ch.icon}</text>
+        <text x="${cx}" y="${cy+r+17}" text-anchor="middle" font-size="12.5" fill="#d0c0ff" font-weight="700" font-family="system-ui,sans-serif">${label}</text>
+        <text x="${cx}" y="${cy+r+32}" text-anchor="middle" font-size="10"   fill="#6858c0" font-family="system-ui,sans-serif">Ch.${ch.num}</text>
+      </g>`;
+
+    return `
+      <g style="cursor:${cursor}" ${click}>
+        <circle cx="${cx}" cy="${cy}" r="${r}" fill="#0c0c20" stroke="#282848" stroke-width="1.5"/>
+        <text x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="middle" font-size="20" opacity=".28">${ch.icon}</text>
+        <text x="${cx}" y="${cy+8}" text-anchor="middle" font-size="13" opacity=".45">🔒</text>
+        <text x="${cx}" y="${cy+r+17}" text-anchor="middle" font-size="12" fill="#6060a0" font-family="system-ui,sans-serif">${label}</text>
+        <text x="${cx}" y="${cy+r+32}" text-anchor="middle" font-size="10" fill="#3a3a68" font-family="system-ui,sans-serif">Ch.${ch.num}</text>
+      </g>`;
   }).join('');
-  requestAnimationFrame(initReveal);
+
+  const g = document.getElementById('chapters-grid');
+  g.innerHTML = `
+    <div class="map-frame">
+    <svg id="map-svg" viewBox="0 0 900 780" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block">
+      <defs>
+        <!-- Progress path gradient -->
+        <linearGradient id="mn-pg" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%"   stop-color="#7c6dfa"/>
+          <stop offset="55%"  stop-color="#9870f4"/>
+          <stop offset="100%" stop-color="#00c896"/>
+        </linearGradient>
+        <!-- Done node fill -->
+        <radialGradient id="mn-done" cx="38%" cy="30%" r="70%">
+          <stop offset="0%"   stop-color="#1e5a38"/>
+          <stop offset="100%" stop-color="#071510"/>
+        </radialGradient>
+        <!-- Next node fill -->
+        <radialGradient id="mn-next" cx="38%" cy="30%" r="70%">
+          <stop offset="0%"   stop-color="#321870"/>
+          <stop offset="100%" stop-color="#0e0826"/>
+        </radialGradient>
+        <!-- Gold ✓ badge -->
+        <linearGradient id="mn-gold" x1="20%" y1="10%" x2="80%" y2="90%">
+          <stop offset="0%"   stop-color="#ffe566"/>
+          <stop offset="100%" stop-color="#c88000"/>
+        </linearGradient>
+        <!-- Path glow filter -->
+        <filter id="mn-pglow" filterUnits="userSpaceOnUse" x="0" y="0" width="900" height="780">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <!-- Money bag glow -->
+        <filter id="mn-bglow" x="-120%" y="-120%" width="340%" height="340%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="7" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <!-- Background grid pattern -->
+        <pattern id="mn-grid" width="55" height="55" patternUnits="userSpaceOnUse">
+          <path d="M55,0 L0,0 0,55" fill="none" stroke="#14143a" stroke-width="0.7"/>
+        </pattern>
+        <!-- Vignette -->
+        <radialGradient id="mn-vig" cx="50%" cy="50%" r="72%">
+          <stop offset="58%"  stop-color="rgba(0,0,0,0)"/>
+          <stop offset="100%" stop-color="rgba(4,4,18,0.75)"/>
+        </radialGradient>
+      </defs>
+
+      <!-- Base + grid + vignette -->
+      <rect width="900" height="780" fill="#080816"/>
+      <rect width="900" height="780" fill="url(#mn-grid)"/>
+      <rect width="900" height="780" fill="url(#mn-vig)"/>
+
+      <!-- Subtle city-block shapes -->
+      <g fill="none" stroke="#1c1c44" stroke-width="0.7" opacity="0.55">
+        <rect x="178" y="108" width="234" height="114" rx="4"/>
+        <rect x="488" y="108" width="234" height="114" rx="4"/>
+        <rect x="178" y="258" width="234" height="114" rx="4"/>
+        <rect x="488" y="258" width="234" height="114" rx="4"/>
+        <rect x="178" y="408" width="234" height="114" rx="4"/>
+        <rect x="488" y="408" width="234" height="114" rx="4"/>
+        <rect x="178" y="558" width="234" height="114" rx="4"/>
+        <rect x="488" y="558" width="234" height="114" rx="4"/>
+      </g>
+
+      <!-- Street-corner circles (give a real city-map feel) -->
+      <g fill="none" stroke="#1e1e46" stroke-width="0.8" opacity="0.4">
+        <circle cx="870" cy="165" r="75"/> <circle cx="30"  cy="315" r="75"/>
+        <circle cx="870" cy="465" r="75"/> <circle cx="30"  cy="615" r="75"/>
+      </g>
+
+      <!-- City landmark icons -->
+      <text x="40"  y="60"  font-size="28" opacity=".32">🏦</text>
+      <text x="826" y="60"  font-size="28" opacity=".32">🏢</text>
+      <text x="40"  y="178" font-size="22" opacity=".26">🌳</text>
+      <text x="834" y="178" font-size="22" opacity=".26">🏪</text>
+      <text x="40"  y="328" font-size="22" opacity=".26">🏛️</text>
+      <text x="834" y="328" font-size="22" opacity=".26">🌿</text>
+      <text x="40"  y="478" font-size="22" opacity=".26">🏗️</text>
+      <text x="834" y="478" font-size="22" opacity=".26">🏦</text>
+      <text x="40"  y="628" font-size="22" opacity=".26">🌳</text>
+      <text x="834" y="628" font-size="22" opacity=".26">🏢</text>
+
+      <!-- Compass rose (bottom-right) -->
+      <g transform="translate(854,728)" opacity=".4">
+        <circle r="18" fill="none" stroke="#2e2e60" stroke-width="1.2"/>
+        <text x="0" y="-6"  text-anchor="middle" font-size="9" fill="#6060a0">N</text>
+        <text x="0" y="14"  text-anchor="middle" font-size="9" fill="#6060a0">S</text>
+        <text x="-12" y="4" text-anchor="middle" font-size="9" fill="#6060a0">W</text>
+        <text x="12"  y="4" text-anchor="middle" font-size="9" fill="#6060a0">E</text>
+        <line x1="0" y1="-14" x2="0" y2="14" stroke="#404070" stroke-width="0.8"/>
+        <line x1="-14" y1="0" x2="14" y2="0" stroke="#404070" stroke-width="0.8"/>
+      </g>
+
+      <!-- FINCITY watermark -->
+      <text x="450" y="763" text-anchor="middle" font-size="11" fill="#28285a"
+            font-weight="700" letter-spacing="6" font-family="system-ui,sans-serif">🏙️  F I N C I T Y</text>
+
+      <!-- Dashed background path -->
+      <path d="${MAP_PATH_D}" fill="none" stroke="#1e1e44" stroke-width="8"
+            stroke-dasharray="0 9999"/>
+      <path d="${MAP_PATH_D}" fill="none" stroke="#282860" stroke-width="6"
+            stroke-dasharray="14 9" stroke-linecap="round"/>
+
+      <!-- Progress path glow (blurred) -->
+      <path id="mn-glow" d="${MAP_PATH_D}" fill="none" stroke="url(#mn-pg)"
+            stroke-width="11" stroke-linecap="round" stroke-dasharray="0 9999"
+            opacity=".35" filter="url(#mn-pglow)"/>
+
+      <!-- Progress path (crisp) -->
+      <path id="map-prog-line" d="${MAP_PATH_D}" fill="none" stroke="url(#mn-pg)"
+            stroke-width="5" stroke-linecap="round" stroke-dasharray="0 9999"/>
+
+      <!-- Hidden path for animateMotion -->
+      <path id="map-anim-path" d="${MAP_PATH_D}" fill="none" stroke="none"/>
+
+      <!-- Chapter nodes (rendered above path) -->
+      ${nodesHTML}
+
+      <!-- Money bag -->
+      <g id="map-bag" opacity="0">
+        <circle r="24" fill="rgba(245,197,24,.2)" stroke="rgba(255,220,60,.6)" stroke-width="2"
+                filter="url(#mn-bglow)"/>
+        <text font-size="26" text-anchor="middle" dominant-baseline="middle">💰</text>
+        <animateMotion id="map-bag-motion" dur="2s" fill="freeze" begin="indefinite"
+                       keyPoints="0;0.001" keyTimes="0;1" calcMode="linear" rotate="auto">
+          <mpath href="#map-anim-path"/>
+        </animateMotion>
+        <animate id="map-bag-fade" attributeName="opacity" begin="indefinite" dur="2s"
+                 fill="freeze" values="0;1;1;1;0" keyTimes="0;0.06;0.5;0.94;1"/>
+      </g>
+    </svg>
+    </div>`;
+
+  // Animate progress path length in after SVG is painted
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    const ref  = document.getElementById('map-anim-path');
+    const line = document.getElementById('map-prog-line');
+    const glow = document.getElementById('mn-glow');
+    if (!ref) return;
+    const total   = ref.getTotalLength ? ref.getTotalLength() : 3880;
+    const doneIdx = state.done.length - 1;
+    if (doneIdx >= 0) {
+      const upTo = Math.min(doneIdx + 1, CHAPTERS.length - 1);
+      const da   = `${total * MAP_OFFSETS[upTo]} ${total + 200}`;
+      if (line) line.setAttribute('stroke-dasharray', da);
+      if (glow) glow.setAttribute('stroke-dasharray', da);
+    }
+  }));
+}
+
+function _triggerBagAnim(fromIdx, toIdx) {
+  const motionEl = document.getElementById('map-bag-motion');
+  const fadeEl   = document.getElementById('map-bag-fade');
+  if (!motionEl || !fadeEl) return;
+  motionEl.setAttribute('keyPoints', `${MAP_OFFSETS[fromIdx]};${MAP_OFFSETS[toIdx]}`);
+  motionEl.beginElement();
+  fadeEl.beginElement();
+  setTimeout(() => _sparkleNode(toIdx), 1900);
+}
+
+function _sparkleNode(idx) {
+  const svg = document.getElementById('map-svg');
+  if (!svg) return;
+  const [cx, cy] = MAP_POS[idx];
+  const ns = 'http://www.w3.org/2000/svg';
+  [[0,'#00c896'],[200,'#7c6dfa'],[400,'#00c896']].forEach(([delay, color]) => {
+    const c = document.createElementNS(ns, 'circle');
+    c.setAttribute('cx', cx); c.setAttribute('cy', cy);
+    c.setAttribute('r', '38'); c.setAttribute('fill', 'none');
+    c.setAttribute('stroke', color); c.setAttribute('stroke-width', '2.5');
+    const aR = document.createElementNS(ns, 'animate');
+    aR.setAttribute('attributeName', 'r');
+    aR.setAttribute('values', '38;82'); aR.setAttribute('dur', '0.85s');
+    aR.setAttribute('begin', `${delay}ms`); aR.setAttribute('fill', 'freeze');
+    const aO = document.createElementNS(ns, 'animate');
+    aO.setAttribute('attributeName', 'opacity');
+    aO.setAttribute('values', '0.9;0'); aO.setAttribute('dur', '0.85s');
+    aO.setAttribute('begin', `${delay}ms`); aO.setAttribute('fill', 'freeze');
+    c.appendChild(aR); c.appendChild(aO);
+    svg.appendChild(c);
+    setTimeout(() => c.remove(), delay + 1000);
+  });
 }
 
 // ===== CHAPTER =====
 function openChapter(id) {
+  narrStop();
   state.current = id;
   state.phase = 'story';
   state.qIdx = 0;
@@ -232,13 +928,42 @@ function renderStory(ch, el) {
       </div>
       <button class="btn btn-ghost btn-sm" onclick="goQuiz()">🧠 Quiz →</button>
     </div>
+    <div class="narr-bar" id="narr-bar">
+      <button class="narr-play-btn" id="narr-play-btn" onclick="narrToggle()" title="Play / Pause narration">▶</button>
+      <button class="narr-stop-btn" onclick="narrStop()" title="Stop">⏹</button>
+      <div class="narr-waveform" id="narr-wave">
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+      <span class="narr-status" id="narr-status">🔊 Tap to listen</span>
+      <select id="narr-lang" class="narr-select" onchange="narrChangeLang(this.value)">
+        ${NARR_LANGS.map(l => `<option value="${l.code}">${l.label}</option>`).join('')}
+      </select>
+      <button class="narr-ai-btn" id="narr-ai-btn" onclick="narrToggleAIPanel()" title="Enable AI voices (ElevenLabs)">✨ AI</button>
+    </div>
+    <div class="narr-ai-panel" id="narr-ai-panel">
+      <div style="font-size:13px;font-weight:700;margin-bottom:6px">🎙️ ElevenLabs AI Voice</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:12px">Ultra-realistic neural voices — Narrator: Adam · Finn: Antoni · Alex: Elli</div>
+      <div style="display:flex;gap:8px;margin-bottom:8px">
+        <input id="el-api-key" type="password" placeholder="Paste your ElevenLabs API key here"
+          style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:9px 13px;color:var(--text);font-size:13px;outline:none;font-family:inherit;transition:border-color .18s"
+          onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"
+          onkeydown="if(event.key==='Enter')narrActivateAI()">
+        <button class="btn btn-primary btn-sm" onclick="narrActivateAI()">Activate</button>
+      </div>
+      <div style="font-size:11px;color:var(--muted)">
+        Free tier: 10,000 chars/month · <a href="https://elevenlabs.io" target="_blank" rel="noopener" style="color:var(--accent2)">Get API key at elevenlabs.io</a>
+      </div>
+    </div>
     <div class="ch-body">
       <div class="panel">
         <div class="panel-label">Story</div>
         <div class="scene-box">${ch.scene}</div>
         ${ch.dialogues.map((d, i) => `
           <div class="dialogue reveal" style="transition-delay:${i * 55}ms">
-            <div class="dlg-who ${d.who}">${d.who === 'finn' ? '🦊 Finn' : d.who === 'alex' ? '🧑 Alex' : '📝 Narrator'}</div>
+            <div class="dlg-header">
+              <div class="dlg-who ${d.who}">${d.who === 'finn' ? '🦊 Finn' : d.who === 'alex' ? '🧑 Alex' : '📝 Narrator'}</div>
+              <button class="dlg-speak-btn" onclick="narrFrom(${i})" title="Listen to this line">🔊</button>
+            </div>
             <div class="dlg-text ${d.who}">${d.text}</div>
           </div>
         `).join('')}
@@ -251,10 +976,12 @@ function renderStory(ch, el) {
         </div>
       </div>
     </div>`;
+  narrInitBar(ch.dialogues);
   requestAnimationFrame(initReveal);
 }
 
 function goInteractive() {
+  narrStop();
   state.phase = 'interactive';
   save();
   renderPhase();
@@ -303,6 +1030,7 @@ function renderInteractive(ch, el) {
 }
 
 function goQuiz() {
+  narrStop();
   state.phase = 'quiz';
   state.qIdx = 0;
   state.qAnswered = false;
@@ -914,9 +1642,12 @@ function initCryptoGame(el) {
 }
 
 // ===== QUIZ =====
+let _quizSelected = -1;  // index of selected option, -1 = none
+
 function renderQuiz(ch, el) {
   const q = ch.quiz[state.qIdx];
   const total = ch.quiz.length;
+  _quizSelected = -1;
   el.innerHTML = `
     <div class="quiz-wrap">
       <div class="panel">
@@ -927,8 +1658,9 @@ function renderQuiz(ch, el) {
         </div>
         <div class="quiz-q">${q.q}</div>
         <div class="quiz-opts" id="quiz-opts">
-          ${q.opts.map((o,i)=>`<button class="quiz-opt" onclick="pickAnswer(${i})">${String.fromCharCode(65+i)}. ${o}</button>`).join('')}
+          ${q.opts.map((o,i)=>`<button class="quiz-opt" onclick="selectAnswer(${i})">${String.fromCharCode(65+i)}. ${o}</button>`).join('')}
         </div>
+        <button class="btn btn-primary quiz-submit-btn" id="quiz-submit-btn" onclick="submitAnswer()" disabled>Submit Answer</button>
         <div class="quiz-explain" id="quiz-explain">💡 ${q.exp}</div>
         <div class="mt16" id="quiz-next-btn" style="display:none">
           ${state.qIdx<total-1
@@ -940,19 +1672,34 @@ function renderQuiz(ch, el) {
   state.qAnswered = false;
 }
 
-function pickAnswer(i) {
+function selectAnswer(i) {
   if (state.qAnswered) return;
+  _quizSelected = i;
+  document.querySelectorAll('.quiz-opt').forEach((o, idx) => {
+    o.classList.toggle('selected', idx === i);
+  });
+  const submitBtn = document.getElementById('quiz-submit-btn');
+  if (submitBtn) submitBtn.disabled = false;
+}
+
+function submitAnswer() {
+  if (state.qAnswered || _quizSelected < 0) return;
   state.qAnswered = true;
+  const i  = _quizSelected;
   const ch = CHAPTERS.find(c => c.id === state.current);
-  const q = ch.quiz[state.qIdx];
+  const q  = ch.quiz[state.qIdx];
   const opts = document.querySelectorAll('.quiz-opt');
-  opts.forEach(o => o.setAttribute('disabled', true));
+  opts.forEach(o => { o.setAttribute('disabled', true); o.classList.remove('selected'); });
   opts[i].classList.add(i === q.ans ? 'correct' : 'wrong');
   if (i !== q.ans) opts[q.ans].classList.add('correct');
+  document.getElementById('quiz-submit-btn').style.display = 'none';
   document.getElementById('quiz-explain').classList.add('show');
   document.getElementById('quiz-next-btn').style.display = 'block';
-  if (i === q.ans) notify('✅ Correct! +20 coins', 'ok');
+  if (i === q.ans) { state.coins += 20; save(); notify('✅ Correct! +20 coins', 'ok'); }
   else notify('❌ Not quite — see explanation', 'bad');
+  // Update coin counter in chapter header
+  const coinEl = document.getElementById('ch-coins');
+  if (coinEl) coinEl.textContent = state.coins;
 }
 
 function nextQ() {
@@ -964,10 +1711,15 @@ function nextQ() {
 }
 
 function completeChapter() {
-  const ch = CHAPTERS.find(c => c.id === state.current);
+  const ch    = CHAPTERS.find(c => c.id === state.current);
+  const chIdx = CHAPTERS.findIndex(c => c.id === state.current);
   if (!state.done.includes(ch.id)) {
     state.done.push(ch.id);
     state.coins += 100;
+    // Queue bag animation: fly from completed chapter to the newly unlocked one
+    if (chIdx >= 0 && chIdx + 1 < CHAPTERS.length) {
+      _bagAnimPending = { from: chIdx, to: chIdx + 1 };
+    }
   }
   save();
   const el = document.getElementById('ch-content');
