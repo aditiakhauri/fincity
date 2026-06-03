@@ -1,6 +1,33 @@
 const CHAPTERS = [
   {
-    id: 'stock-market', num: 1, icon: '🏦', title: 'The Stock Market',
+    id: 'equity', num: 1, icon: '💼', title: 'Equity',
+    tag: 'Ownership and what it really means',
+    scene: '💼🏢📊',
+    dialogues: [
+      { who: 'narrator', text: 'Alex has just arrived in FinCity. Before anything else, Finn wants to explain one foundational idea that underpins almost every investment.' },
+      { who: 'finn', text: 'Welcome! Before we tour the markets, one word will come up constantly: EQUITY. Let\'s make sure you know exactly what it means. Tell me — if you own a house worth $300,000 but have a $200,000 mortgage, what do YOU actually own?' },
+      { who: 'alex', text: 'I guess… only the part that\'s mine? $100,000 worth?' },
+      { who: 'finn', text: 'Exactly. That $100,000 is your EQUITY. It\'s the portion you truly own after subtracting what you owe. The formula is simple: Equity = Assets − Liabilities. The same idea applies to companies, banks, and investment portfolios.' },
+      { who: 'alex', text: 'So for a company, equity is what\'s left after paying all debts?' },
+      { who: 'finn', text: 'Precisely. If a company owns $500,000 in assets (buildings, cash, equipment) and owes $300,000 to banks and creditors, the SHAREHOLDERS\' EQUITY is $200,000. That $200,000 belongs to the owners — the shareholders. When you buy a stock, you\'re buying a slice of that equity.' },
+      { who: 'alex', text: 'What\'s the difference between book value and market value of equity?' },
+      { who: 'finn', text: 'BOOK VALUE is equity on the accounting balance sheet — historical cost of assets minus liabilities. MARKET VALUE is what investors are actually willing to pay, based on expectations of future profits. Apple\'s book value might be $60 billion, but investors pay $3 trillion for its shares because they expect massive future profits.' },
+      { who: 'alex', text: 'So a company can be worth far more than its accounting numbers suggest?' },
+      { who: 'finn', text: 'Always. The gap between book and market value reflects intangibles: brand, talent, patents, competitive advantage. Google\'s search algorithm has no book value — yet it\'s worth hundreds of billions. Markets price the FUTURE; accountants record the PAST.' },
+      { who: 'alex', text: 'How do companies raise equity? Is it just selling shares?' },
+      { who: 'finn', text: 'That\'s the main way. A company issues shares, investors buy them, cash flows in — that\'s EQUITY FINANCING. The alternative is DEBT FINANCING: borrow money from a bank or issue bonds. The key difference: equity holders OWN the company and share in profits. Debt holders are just creditors who get paid back with interest.' },
+      { who: 'alex', text: 'Which is better — equity or debt financing?' },
+      { who: 'finn', text: 'It depends! Debt is cheaper (interest is tax-deductible, lenders take less risk) but dangerous if the company struggles to make payments. Equity never needs repaying but dilutes the founders\' ownership. Most companies use a MIX — a capital structure that balances the benefits of both.' },
+      { who: 'narrator', text: 'Equity is the foundational concept of the entire investment world. Every stock you buy is a share of equity. Every company balance sheet starts with Assets = Liabilities + Equity. Mastering this one idea unlocks everything else.' },
+    ],
+    concept: 'Equity = Assets − Liabilities. It represents ownership. Shareholders\' equity is what investors would receive if a company sold everything and paid all debts. Book value vs market value: markets price the future, accountants record the past.',
+    quiz: [
+      { q: 'A company has $800,000 in assets and $550,000 in liabilities. What is the shareholders\' equity?', opts: ['$250,000', '$800,000', '$550,000', '$1,350,000'], ans: 0, exp: 'Shareholders\' equity = Assets − Liabilities = $800,000 − $550,000 = $250,000. This is what belongs to the owners after all debts are paid.' },
+      { q: 'Apple\'s book value is $70B but its market cap is $3T. What explains the difference?', opts: ['Investors price future earnings, brand, and intangibles not on the balance sheet', 'Apple has hidden assets', 'The stock market is always wrong', 'Book value includes goodwill'], ans: 0, exp: 'Market value reflects expectations about future profits, brand strength, competitive moats, and growth — none of which appear on an accounting balance sheet. Markets are forward-looking.' }
+    ]
+  },
+  {
+    id: 'stock-market', num: 2, icon: '🏦', title: 'The Stock Market',
     tag: 'Own a slice of any company',
     scene: '🌆🏪🍌',
     dialogues: [
@@ -27,7 +54,123 @@ const CHAPTERS = [
     ]
   },
   {
-    id: 'bid-ask', num: 2, icon: '💱', title: 'Bid & Ask',
+    id: 'inflation', num: 3, icon: '🔺', title: 'Inflation',
+    tag: 'Why your money loses value over time',
+    scene: '🔺🛒💵',
+    dialogues: [
+      { who: 'narrator', text: 'Finn takes Alex to a FinCity grocery store. A coffee costs $4 today. Finn pulls out an old receipt.' },
+      { who: 'finn', text: 'This receipt is from 10 years ago. The same coffee cost $2.50 then. It\'s the same coffee, the same shop. But the price doubled. What happened?' },
+      { who: 'alex', text: 'Prices just… went up? Is that inflation?' },
+      { who: 'finn', text: 'Exactly! INFLATION is the rate at which prices across an economy rise over time — which means your money\'s PURCHASING POWER falls. If inflation is 5%, $100 today will only buy what $95 bought last year. Your cash is literally losing value while sitting in your wallet.' },
+      { who: 'alex', text: 'How do we measure inflation? Whose prices do we track?' },
+      { who: 'finn', text: 'Governments track a "basket" of typical goods and services — food, rent, transport, clothing, healthcare. This is the CONSUMER PRICE INDEX (CPI). Each month, statisticians check prices on hundreds of items. If the basket costs 4% more than a year ago, inflation is 4%.' },
+      { who: 'alex', text: 'What actually causes inflation? Why do prices rise?' },
+      { who: 'finn', text: 'Three main causes. DEMAND-PULL: everyone has money and wants stuff — too much demand, prices rise. COST-PUSH: production costs rise (oil, wages) — companies pass costs to customers. MONETARY: the government prints too much money — more dollars chasing the same goods means each dollar is worth less.' },
+      { who: 'alex', text: 'Which is happening most often in the real world?' },
+      { who: 'finn', text: 'Usually a mix! The 2021–2022 inflation spike was all three: COVID stimulus flooded the economy with cash (monetary), supply chains broke (cost-push), and reopening triggered a spending surge (demand-pull). Central banks fought it by raising interest rates sharply.' },
+      { who: 'alex', text: 'If I have $10,000 in a savings account paying 1% interest and inflation is 4%, what actually happens?' },
+      { who: 'finn', text: 'You\'re LOSING purchasing power. Your account shows $10,100 after a year — a "gain" of $100. But goods cost 4% more. In REAL terms, your $10,100 can only buy what $9,710 bought a year ago. Your REAL return is −3%. Inflation silently erodes savings in accounts that don\'t keep up.' },
+      { who: 'alex', text: 'So how do investors protect themselves from inflation?' },
+      { who: 'finn', text: 'STOCKS historically beat inflation over time — companies raise prices, so their revenues and profits grow with inflation. REAL ASSETS like property, commodities, and gold tend to hold value. TIPS (Treasury Inflation-Protected Securities) are bonds specifically designed to rise with inflation. Cash is the worst inflation hedge.' },
+      { who: 'alex', text: 'What\'s the ideal inflation rate? Is zero best?' },
+      { who: 'finn', text: 'Surprisingly, no! Central banks target around 2% inflation — low enough to preserve purchasing power, but enough to keep the economy moving. Zero inflation risks DEFLATION (falling prices), which causes people to delay spending (why buy today if it\'s cheaper tomorrow?), and can trigger recessions. 2% is the Goldilocks zone.' },
+      { who: 'narrator', text: 'Inflation is the invisible tax on savers. Understanding it is critical: every investment decision — from choosing between stocks and bonds to how long you hold cash — must account for inflation eroding your real returns.' },
+    ],
+    concept: 'Inflation = rate of price increase over time. CPI measures it. Real return = nominal return minus inflation. Stocks, real assets, and TIPS hedge inflation. Cash loses purchasing power. Central banks target ~2% inflation.',
+    quiz: [
+      { q: 'Your savings account pays 1.5% interest. Inflation is 4%. What is your real return?', opts: ['−2.5%', '+5.5%', '+1.5%', '+4%'], ans: 0, exp: 'Real return = Nominal return − Inflation = 1.5% − 4% = −2.5%. Despite the account growing in dollar terms, you can buy less than before.' },
+      { q: 'Which asset class historically provides the best long-term inflation protection?', opts: ['Stocks (equities)', 'Cash in a savings account', 'Short-term government bonds', 'Foreign currencies'], ans: 0, exp: 'Stocks represent ownership in companies that can raise prices with inflation, growing revenues and profits. Over long periods, equity returns have significantly outpaced inflation in most developed markets.' }
+    ]
+  },
+  {
+    id: 'bonds', num: 4, icon: '🔗', title: 'Bonds',
+    tag: 'Lending money and earning interest',
+    scene: '🔗📄💰',
+    dialogues: [
+      { who: 'narrator', text: 'FinCity\'s government needs to build a new bridge but doesn\'t have the money. Finn takes Alex to the FinCity Bond Office to see how governments — and companies — borrow from the public.' },
+      { who: 'finn', text: 'Imagine the city needs $1 million to build a bridge. Rather than getting one big bank loan, they ask thousands of ordinary investors to each lend them a small amount. That\'s what a BOND is — a loan from investors to a borrower, documented as a tradeable security.' },
+      { who: 'alex', text: 'So a bond is basically an IOU from a government or company?' },
+      { who: 'finn', text: 'Exactly! When you buy a $1,000 bond from FinCity at 5% for 10 years, you\'re lending them $1,000. They promise to pay you $50 per year (the COUPON) for 10 years, then return your $1,000 (the FACE VALUE or PRINCIPAL) at MATURITY. Simple, predictable cash flows.' },
+      { who: 'alex', text: 'What\'s the difference between a coupon and a yield?' },
+      { who: 'finn', text: 'The COUPON RATE is fixed at issuance — the 5% in our example. The YIELD is what you actually earn based on the price you pay. If that bond\'s price falls to $900 in the market (you can buy it cheaper), the same $50 coupon gives you a yield of 5.56% — more bang for your buck!' },
+      { who: 'alex', text: 'Why would the price of a bond change at all? Isn\'t it fixed?' },
+      { who: 'finn', text: 'The FACE VALUE is fixed, but the MARKET PRICE moves constantly. Here\'s the key rule: when interest rates RISE, existing bond prices FALL. Think about it — if new bonds now pay 7%, who wants your old 5% bond? They\'ll only buy it at a discount. Rates up → bond prices down. Always.' },
+      { who: 'alex', text: 'And if interest rates fall, bond prices rise?' },
+      { who: 'finn', text: 'Yes! If rates fall to 3%, your 5% bond is suddenly very attractive — better than anything new in the market. Investors bid up its price. This is why bond fund managers obsess over interest rate predictions — they determine whether bond portfolios gain or lose value.' },
+      { who: 'alex', text: 'What\'s the difference between government bonds and corporate bonds?' },
+      { who: 'finn', text: 'GOVERNMENT BONDS (Treasuries in the US, Gilts in the UK) are issued by national governments. They\'re considered the safest investment — governments can always raise taxes or theoretically print money to repay. CORPORATE BONDS are riskier (companies can go bankrupt), so they pay a higher yield as compensation for that extra risk.' },
+      { who: 'alex', text: 'How do I know how risky a bond is?' },
+      { who: 'finn', text: 'Credit rating agencies — Moody\'s, S&P, Fitch — rate bonds from AAA (safest, lowest yield) down to D (defaulted). Investment-grade bonds (BBB or above) are considered relatively safe. Below BBB are "junk bonds" — higher yield, much higher default risk. Always check the rating.' },
+      { who: 'alex', text: 'Why would anyone want a bond when stocks give higher returns over time?' },
+      { who: 'finn', text: 'Stability and income! Bonds provide predictable cash flows, don\'t crash 40% in a recession (usually), and are a critical part of a balanced portfolio. Near retirement? You can\'t afford to see your savings halved by a stock crash. Bonds smooth out that volatility. Most professional portfolios hold both.' },
+      { who: 'narrator', text: 'Bonds are the backbone of global finance — governments and corporations raise trillions through them every year. The bond market is actually BIGGER than the stock market. Understanding yield, duration, and credit risk is essential for any serious investor.' },
+    ],
+    concept: 'A bond is a loan to a government or company. You receive coupon payments + face value at maturity. Key rule: rates up → bond prices down. Credit ratings measure default risk. Bonds provide stability vs stocks.',
+    quiz: [
+      { q: 'You own a bond with a $1,000 face value and 4% coupon. Interest rates rise to 6%. What happens to your bond\'s market price?', opts: ['It falls below $1,000', 'It rises above $1,000', 'It stays at $1,000', 'It depends on maturity only'], ans: 0, exp: 'When market rates rise above the bond\'s coupon, the bond becomes less attractive. Its price falls so that the fixed coupon payments represent a competitive yield for the buyer.' },
+      { q: 'A corporate bond pays 8% yield, a government bond pays 3%. What explains the difference?', opts: ['The corporate bond has higher default risk', 'The corporate bond has lower risk', 'Government bonds are longer maturity', 'Corporate bonds are taxed differently'], ans: 0, exp: 'The extra 5% yield is a RISK PREMIUM — compensation for the higher chance the corporation defaults vs the government. Higher risk = higher yield required to attract investors.' }
+    ]
+  },
+  {
+    id: 'credit', num: 5, icon: '💳', title: 'Credit',
+    tag: 'The price of trust in borrowing',
+    scene: '💳🏦📊',
+    dialogues: [
+      { who: 'narrator', text: 'Alex needs $50,000 to open a new business in FinCity. Two lenders quote very different interest rates. Finn explains why.' },
+      { who: 'finn', text: 'Lender A quotes 4% interest. Lender B quotes 11%. Same loan amount, but wildly different rates. Why? It all comes down to CREDIT — the perceived ability and willingness of a borrower to repay a debt.' },
+      { who: 'alex', text: 'So the interest rate I get depends on how trustworthy I am as a borrower?' },
+      { who: 'finn', text: 'Exactly. Lenders assess CREDIT RISK — the probability that you won\'t repay. Lower risk = lower interest rate (you\'re a reliable borrower). Higher risk = higher rate (the lender demands compensation for the chance you default). Credit is essentially a measurement of financial trust.' },
+      { who: 'alex', text: 'How is creditworthiness actually measured?' },
+      { who: 'finn', text: 'For individuals: a CREDIT SCORE (300–850 in the US). It\'s calculated from payment history, amounts owed, length of credit history, new credit, and types of credit used. Pay bills on time, keep debt low, and your score rises. Miss payments or max out cards, and it tanks.' },
+      { who: 'alex', text: 'What about companies and governments? How are they rated?' },
+      { who: 'finn', text: 'CREDIT RATING AGENCIES — Moody\'s, Standard & Poor\'s, and Fitch — analyse company and government finances and assign letter grades. AAA is the highest (rock-solid, like US Treasury). BBB is the minimum "investment grade." Below BBB is "speculative" or JUNK status — high default risk.' },
+      { who: 'alex', text: 'What actually happens if a borrower defaults — stops paying?' },
+      { who: 'finn', text: 'For the borrower: bankruptcy, ruined credit score, seized assets, legal action. For the LENDER: they lose part or all of the money owed. This is why lenders price risk into interest rates — the higher the chance of default, the more they charge upfront to compensate for potential losses.' },
+      { who: 'alex', text: 'What is a credit spread?' },
+      { who: 'finn', text: 'The CREDIT SPREAD is the extra yield a borrower pays ABOVE a risk-free rate (like US Treasuries). A AAA corporate bond might pay 3.5% while Treasuries pay 3% — credit spread of 0.5%. A junk bond might pay 9% — spread of 6%. The spread is the market\'s real-time price tag on default risk.' },
+      { who: 'alex', text: 'Can credit ratings change over time?' },
+      { who: 'finn', text: 'Absolutely — and when they do, it matters enormously. A DOWNGRADE (e.g., from BBB to BB) below investment grade forces many institutional investors to SELL the bond (their mandates prohibit junk). This selling floods the market, crashing the bond\'s price. Credit events can cause violent moves in bond markets.' },
+      { who: 'alex', text: 'What\'s a credit default swap? I hear this in financial news.' },
+      { who: 'finn', text: 'A CREDIT DEFAULT SWAP (CDS) is essentially insurance on a bond. You pay a premium; if the bond issuer defaults, the CDS seller pays you the face value. Banks and hedge funds use CDS to either hedge credit risk or speculate on companies failing. They became famous in the 2008 crisis when AIG wrote billions in CDS it couldn\'t pay.' },
+      { who: 'narrator', text: 'Credit is the lifeblood of a modern economy — mortgages, business loans, car finance, government debt. Understanding how risk gets priced into interest rates helps you understand why different borrowers face wildly different costs for the same dollar borrowed.' },
+    ],
+    concept: 'Credit measures a borrower\'s ability to repay. Credit scores (individuals) and credit ratings AAA→D (companies/governments) determine interest rates. Credit spread = extra yield above risk-free rate. Higher default risk = higher borrowing cost.',
+    quiz: [
+      { q: 'Company X has a BBB credit rating. Company Y has a BB rating (one notch lower, "junk"). Who pays a higher interest rate on new bonds?', opts: ['Company Y pays more', 'Company X pays more', 'They pay the same', 'Rating doesn\'t affect interest rates'], ans: 0, exp: 'Lower credit rating = higher default risk = lenders demand a higher yield as compensation. Junk-rated companies can pay 3–8% more annually than investment-grade peers for the same loan amount.' },
+      { q: 'What is a "credit spread"?', opts: ['The extra yield a bond pays above the risk-free rate', 'The bid-ask spread on credit cards', 'The difference between short and long-term rates', 'A type of credit default swap'], ans: 0, exp: 'Credit spread = bond yield minus the risk-free rate (government bond). It represents the market\'s price for default risk. Spreads widen during crises (higher fear) and narrow in calm periods.' }
+    ]
+  },
+  {
+    id: 'taxes', num: 6, icon: '🧾', title: 'Taxes on Investments',
+    tag: 'The return you keep is what matters',
+    scene: '🧾💸📋',
+    dialogues: [
+      { who: 'narrator', text: 'Alex just made $5,000 profit selling BananaCo shares. Finn shows up with some sobering news before Alex spends it all.' },
+      { who: 'finn', text: 'Congratulations on the profit! But before you celebrate — the government wants their share. Investment income is taxed. How MUCH you pay depends on several things, and understanding this can literally mean thousands of dollars more in your pocket.' },
+      { who: 'alex', text: 'So I don\'t keep the full $5,000 profit?' },
+      { who: 'finn', text: 'Likely not. Investment gains are subject to CAPITAL GAINS TAX — tax on profits from selling an asset. But here\'s the critical detail: the rate depends on HOW LONG you held the asset. Two completely different rates: short-term and long-term.' },
+      { who: 'alex', text: 'What\'s the difference?' },
+      { who: 'finn', text: 'SHORT-TERM capital gains: held less than 1 year. Taxed at your ORDINARY INCOME tax rate — could be 22%, 24%, even 37% depending on your bracket. LONG-TERM capital gains: held MORE than 1 year. Taxed at preferential rates: 0%, 15%, or 20% depending on income. The tax code literally rewards patient investors.' },
+      { who: 'alex', text: 'So if I hold for 12 months and one day instead of 11 months, I could save a massive amount of tax?' },
+      { who: 'finn', text: 'Exactly! On a $50,000 gain in the 32% bracket: short-term tax = $16,000. Long-term tax = $7,500 (at 15%). Waiting that extra month saved $8,500. This is called TAX-EFFICIENCY — structuring your investing to legally minimise the tax you pay.' },
+      { who: 'alex', text: 'What about dividends? Are those taxed differently too?' },
+      { who: 'finn', text: 'Yes. QUALIFIED DIVIDENDS (from most US stocks held long enough) are taxed at the same low long-term capital gains rates. ORDINARY DIVIDENDS are taxed as income. And interest from bonds is taxed as ordinary income at the full rate — which is one reason some investors prefer dividend stocks over bonds in taxable accounts.' },
+      { who: 'alex', text: 'Is there any way to avoid paying tax on investments entirely?' },
+      { who: 'finn', text: 'Not avoid — but defer or eliminate through TAX-ADVANTAGED ACCOUNTS. A 401(k) or Traditional IRA: contributions are pre-tax, investments grow tax-deferred, you pay tax only when you withdraw in retirement. A ROTH IRA: contributions are after-tax, but ALL gains grow and are withdrawn TAX-FREE. The math on Roth compounding is incredible over decades.' },
+      { who: 'alex', text: 'What is tax-loss harvesting? I\'ve heard that term.' },
+      { who: 'finn', text: 'TAX-LOSS HARVESTING is intentionally selling investments that are DOWN to realise a loss — which offsets your gains and reduces tax. If you made $10,000 profit on BananaCo but $4,000 loss on OilCo, you only pay tax on $6,000 net gain. You can harvest up to $3,000 in losses annually against ordinary income too.' },
+      { who: 'alex', text: 'This all sounds complex. Do I need an accountant?' },
+      { who: 'finn', text: 'For complex portfolios — yes. But the core principles are simple: hold investments long-term, use tax-advantaged accounts first, harvest losses strategically. A financial advisor estimates that tax optimisation alone can add 1–2% per year to your effective return. Over 30 years, that compounds into a HUGE difference.' },
+      { who: 'narrator', text: 'Taxes are the most controllable cost in investing. You can\'t control market returns, but you CAN control when and how you realise gains. The best investors treat their after-tax return as the only return that matters.' },
+    ],
+    concept: 'Short-term gains (< 1 year) taxed as income. Long-term gains (> 1 year) taxed at lower rates (0/15/20%). Tax-advantaged accounts (401k, Roth IRA) shelter gains. Tax-loss harvesting offsets gains with losses. After-tax return is what actually matters.',
+    quiz: [
+      { q: 'You\'re in the 24% income tax bracket and sell stock for a $20,000 gain. You held it for 8 months. Approx how much tax do you owe?', opts: ['$4,800 (short-term rate)', '$3,000 (15% long-term rate)', '$0 — stocks aren\'t taxed', '$7,400'], ans: 0, exp: 'Held less than 12 months = short-term capital gain, taxed at your ordinary income rate of 24%. $20,000 × 24% = $4,800. Holding 4+ more months would have cut this to $3,000 at the 15% long-term rate.' },
+      { q: 'What is the key advantage of a Roth IRA account for investing?', opts: ['Gains grow and are withdrawn completely tax-free', 'You pay no taxes at all ever', 'Contributions are tax-deductible', 'There are no contribution limits'], ans: 0, exp: 'In a Roth IRA, you invest after-tax dollars. All growth and qualified withdrawals in retirement are 100% tax-free. Over decades, this can shelter hundreds of thousands in gains from taxation.' }
+    ]
+  },
+  {
+    id: 'bid-ask', num: 7, icon: '💱', title: 'Bid & Ask',
     tag: 'How prices are actually set',
     scene: '🏪🤝💰',
     dialogues: [
@@ -53,7 +196,7 @@ const CHAPTERS = [
     ]
   },
   {
-    id: 'trading', num: 3, icon: '⚡', title: 'Trading',
+    id: 'trading', num: 8, icon: '⚡', title: 'Trading',
     tag: 'How to buy and sell',
     scene: '💻📊🔔',
     dialogues: [
@@ -79,7 +222,7 @@ const CHAPTERS = [
     ]
   },
   {
-    id: 'dividends', num: 4, icon: '💸', title: 'Dividends',
+    id: 'dividends', num: 9, icon: '💸', title: 'Dividends',
     tag: 'Getting paid to own shares',
     scene: '🍌💰📬',
     dialogues: [
@@ -106,7 +249,7 @@ const CHAPTERS = [
     ]
   },
   {
-    id: 'portfolio', num: 5, icon: '🗂️', title: 'Portfolio',
+    id: 'portfolio', num: 10, icon: '🗂️', title: 'Portfolio',
     tag: 'Don\'t put all eggs in one basket',
     scene: '🧺🍌🥇⛽',
     dialogues: [
@@ -132,7 +275,7 @@ const CHAPTERS = [
     ]
   },
   {
-    id: 'volatility', num: 6, icon: '🌊', title: 'Volatility',
+    id: 'volatility', num: 11, icon: '🌊', title: 'Volatility',
     tag: 'The measure of market drama',
     scene: '📉📈🎢',
     dialogues: [
@@ -158,7 +301,35 @@ const CHAPTERS = [
     ]
   },
   {
-    id: 'interest-rates', num: 7, icon: '🏛️', title: 'Interest Rates Market',
+    id: 'arbitrage', num: 12, icon: '⚖️', title: 'Arbitrage',
+    tag: 'Risk-free profit from price differences',
+    scene: '⚖️💡🔄',
+    dialogues: [
+      { who: 'narrator', text: 'Finn pulls Alex aside in the trading hall and whispers: "I\'ve spotted something. The same banana is selling for $1 at one stall and $1.20 at the stall next door. What would you do?"' },
+      { who: 'alex', text: 'Buy from the cheap stall and sell to people at the expensive one? That\'s free money!' },
+      { who: 'finn', text: 'You just discovered ARBITRAGE — exploiting a price difference for the same asset in different markets to earn a risk-free profit. Buy low here, sell high there, pocket the difference with no risk. In theory, it\'s the closest thing to a free lunch in finance.' },
+      { who: 'alex', text: 'If it\'s risk-free, why doesn\'t everyone do it all the time?' },
+      { who: 'finn', text: 'They do — and that\'s exactly why true arbitrage disappears almost instantly. The moment you start buying from the cheap market, demand there pushes prices up. Selling into the expensive market pushes prices down. Within seconds, the gap closes. Modern algorithmic traders scan every exchange simultaneously and exploit arbs in microseconds.' },
+      { who: 'alex', text: 'What are some real examples of arbitrage?' },
+      { who: 'finn', text: 'EXCHANGE ARBITRAGE: the same stock trading at slightly different prices on NYSE vs NASDAQ. Buy on one, sell on the other. MERGER ARBITRAGE: a company is being acquired at $50/share, but currently trades at $48 — buy it to capture the $2 gap. TRIANGULAR FX ARBITRAGE: exploiting inconsistencies between three currency pairs.' },
+      { who: 'alex', text: 'How does triangular forex arbitrage work?' },
+      { who: 'finn', text: 'If USD→EUR→GBP→USD doesn\'t equal exactly 1, you can profit cycling through three currencies. Example: Start with $100 → convert to €90 → convert to £80 → convert back to $102. A $2 profit from pure currency math. In practice these gaps are fractions of a pip and only worth it at massive scale.' },
+      { who: 'alex', text: 'What is the "Law of One Price"?' },
+      { who: 'finn', text: 'The LAW OF ONE PRICE states that in efficient markets, identical assets must have the same price everywhere. Arbitrage is the ENFORCEMENT MECHANISM — whenever prices diverge, arbitrageurs immediately trade to close the gap, restoring price equality. Arbitrage keeps markets honest and prices consistent globally.' },
+      { who: 'alex', text: 'Are there slower types of arbitrage that don\'t require lightning-fast computers?' },
+      { who: 'finn', text: 'Yes — STATISTICAL ARBITRAGE. Instead of identical assets, you look for historically correlated assets that have temporarily diverged. Coke and Pepsi stocks usually move together. If Coke drops 5% while Pepsi stays flat, a stat arb trader might buy Coke expecting it to revert. It\'s riskier (correlation can break!) but more accessible.' },
+      { who: 'alex', text: 'So pure arbitrage is essentially gone from markets, but stat arb still works?' },
+      { who: 'finn', text: 'Pure arb is extremely rare and fleeting — grab it in milliseconds or it\'s gone. Statistical arb persists because it requires judgment, patience, and risk tolerance that algorithms can\'t fully automate. Hedge funds like Renaissance Technologies have made billions from sophisticated stat arb strategies. The "free lunch" is rare — but not entirely extinct.' },
+      { who: 'narrator', text: 'Arbitrage is the self-healing mechanism of financial markets. Every time prices diverge, arbitrageurs instantly correct them. Understanding arbitrage explains WHY markets stay efficient — and WHY the same asset can\'t sustainably trade at two different prices simultaneously.' },
+    ],
+    concept: 'Arbitrage = exploiting price differences for risk-free profit. Law of One Price: identical assets must trade at the same price. Pure arbitrage disappears instantly in modern markets. Statistical arbitrage exploits historical correlations that temporarily diverge.',
+    quiz: [
+      { q: 'BananaCo stock trades at $100 on Exchange A and $100.50 on Exchange B. A trader buys on A and sells on B. What is this?', opts: ['Pure arbitrage — risk-free $0.50 profit per share', 'Speculation — risky bet on price direction', 'Market making — providing liquidity', 'Hedging — reducing risk'], ans: 0, exp: 'Buying at $100 and immediately selling at $100.50 for the same asset in different markets is textbook arbitrage — a risk-free profit. In practice, this gap would close within milliseconds.' },
+      { q: 'The "Law of One Price" says that:', opts: ['Identical assets must trade at the same price in efficient markets', 'All stocks eventually reach the same price', 'Only one buyer can set the market price', 'Prices can only move in one direction'], ans: 0, exp: 'The Law of One Price is enforced by arbitrage: whenever the same asset trades at different prices, traders immediately buy the cheaper and sell the dearer, closing the gap.' }
+    ]
+  },
+  {
+    id: 'interest-rates', num: 13, icon: '🏛️', title: 'Interest Rates Market',
     tag: 'The price of borrowing money',
     scene: '🏦💵🔢',
     dialogues: [
@@ -184,7 +355,7 @@ const CHAPTERS = [
     ]
   },
   {
-    id: 'fx-market', num: 8, icon: '🌍', title: 'FX Market',
+    id: 'fx-market', num: 14, icon: '🌍', title: 'FX Market',
     tag: 'Trading one currency for another',
     scene: '✈️💴💶💵',
     dialogues: [
@@ -210,7 +381,7 @@ const CHAPTERS = [
     ]
   },
   {
-    id: 'commodities', num: 9, icon: '⛽', title: 'Commodity & Energy Markets',
+    id: 'commodities', num: 15, icon: '⛽', title: 'Commodity & Energy Markets',
     tag: 'Trading real physical things',
     scene: '🛢️🌽🥇🌤️',
     dialogues: [
@@ -236,7 +407,7 @@ const CHAPTERS = [
     ]
   },
   {
-    id: 'derivatives', num: 10, icon: '📜', title: 'Derivatives',
+    id: 'derivatives', num: 16, icon: '📜', title: 'Derivatives',
     tag: 'Contracts derived from other assets',
     scene: '📜🔗🍌📊',
     dialogues: [
@@ -262,7 +433,36 @@ const CHAPTERS = [
     ]
   },
   {
-    id: 'options', num: 11, icon: '🎯', title: 'Options Exchanges',
+    id: 'options-basics', num: 17, icon: '📋', title: 'Options: The Basics',
+    tag: 'What makes an option valuable',
+    scene: '📋🎯💡',
+    dialogues: [
+      { who: 'narrator', text: 'Alex has heard "options" mentioned throughout FinCity. Before diving into the Options Exchange, Finn explains exactly what gives an option its value from first principles.' },
+      { who: 'finn', text: 'You understand that an option is the right — not obligation — to buy or sell something at a fixed price. But WHY does that right have value? Let\'s build intuition from scratch.' },
+      { who: 'alex', text: 'I guess the right to buy something cheap has value if the market price is higher?' },
+      { who: 'finn', text: 'Exactly — that\'s called INTRINSIC VALUE. For a CALL option with a $50 strike, if the stock is at $60, you can buy at $50 and instantly "sell" at $60 — a $10 gain. Intrinsic value = MAX(stock price − strike price, 0). If the stock is below the strike, intrinsic value is zero — it can\'t be negative.' },
+      { who: 'alex', text: 'So intrinsic value is the "right now" value if I exercised immediately?' },
+      { who: 'finn', text: 'Exactly. But options almost always cost MORE than their intrinsic value alone. The extra amount is TIME VALUE. Even if an out-of-the-money option has zero intrinsic value today, the stock MIGHT move above the strike before expiry. That possibility has value — you\'re paying for potential.' },
+      { who: 'alex', text: 'What determines how much time value an option has?' },
+      { who: 'finn', text: 'Five factors: SPOT PRICE (current stock price), STRIKE PRICE (your locked-in price), TIME TO EXPIRY (more time = more chance of movement = more time value), VOLATILITY (higher vol = larger potential swings = more chance of profit = higher option price), and RISK-FREE RATE.' },
+      { who: 'alex', text: 'Why does higher volatility make options more expensive? That seems counterintuitive.' },
+      { who: 'finn', text: 'Think about it this way: if a stock NEVER moves, a call option is worthless — the stock won\'t rise above the strike. But if the stock could swing 50% in either direction, there\'s a real chance it ends up deep in-the-money. Options only benefit from upside moves, and your loss is capped at the premium. So high vol = more upside potential with the same capped downside.' },
+      { who: 'alex', text: 'What is Delta? I keep seeing it mentioned.' },
+      { who: 'finn', text: 'DELTA measures how much the option price moves when the stock price moves $1. A delta of 0.5 means: stock rises $1 → option rises $0.50. Deep in-the-money calls have delta near 1.0 (move almost like the stock). Far out-of-the-money options have delta near 0 (barely respond to small moves). Delta is also the approximate probability the option expires in-the-money.' },
+      { who: 'alex', text: 'What happens to time value as expiry approaches?' },
+      { who: 'finn', text: 'It DECAYS. Every day that passes, there\'s less time for the stock to move. This decay accelerates as expiry approaches — called THETA decay. Option sellers LOVE theta decay (time works for them). Option buyers race against it. An option you bought for $5 with 3 months left might only be worth $1 with 1 week left, even if the stock hasn\'t moved.' },
+      { who: 'alex', text: 'So buying options is risky because time keeps eroding their value?' },
+      { who: 'finn', text: 'Yes — and this is why most retail traders who "just buy options" lose money. You need the stock to move FAST and FAR enough in the right direction to overcome time decay. Professionals often SELL options to collect premium, letting time work in their favour. Options are powerful — but they require understanding all five pricing factors to use wisely.' },
+      { who: 'narrator', text: 'Option price = Intrinsic Value + Time Value. The five inputs to any option price are: spot price, strike price, time to expiry, volatility, and interest rates. Understanding these building blocks is the gateway to the entire world of options strategy.' },
+    ],
+    concept: 'Option price = Intrinsic Value + Time Value. Intrinsic = max(S−K, 0) for calls. Time value reflects probability of future price moves. Volatility increases option prices. Theta decay erodes time value daily. Delta = sensitivity to stock price moves.',
+    quiz: [
+      { q: 'A call option has a strike of $80. The stock is at $95. What is the intrinsic value?', opts: ['$15', '$80', '$95', '$0'], ans: 0, exp: 'Intrinsic value for a call = max(Stock price − Strike price, 0) = max($95 − $80, 0) = $15. This is the immediate profit if you exercised right now.' },
+      { q: 'Volatility on BananaCo rises from 20% to 45%. What happens to the price of its options?', opts: ['They become more expensive', 'They become cheaper', 'No effect on option price', 'Only put options are affected'], ans: 0, exp: 'Higher volatility means larger potential price swings — creating more chance the option ends up deep in-the-money. Since option holders benefit from big moves but have capped downside, higher vol always increases option prices (both calls and puts).' }
+    ]
+  },
+  {
+    id: 'options', num: 18, icon: '🎯', title: 'Options Exchanges',
     tag: 'The right, but not the obligation',
     scene: '🎯📋🏷️',
     dialogues: [
@@ -288,7 +488,34 @@ const CHAPTERS = [
     ]
   },
   {
-    id: 'payoffs', num: 12, icon: '📐', title: 'Payoffs',
+    id: 'put-call-parity', num: 19, icon: '🔄', title: 'Put-Call Parity',
+    tag: 'The iron law connecting calls and puts',
+    scene: '🔄⚖️📐',
+    dialogues: [
+      { who: 'narrator', text: 'Finn leads Alex to a whiteboard in the Options Exchange. "There\'s a mathematical law," Finn says, "that links the price of calls and puts. Violate it and money can be printed from thin air."' },
+      { who: 'finn', text: 'You now know what calls and puts are. Here\'s a question: if I gave you a CALL option (right to buy at $100) and enough cash to pay the strike ($100 invested risk-free), what have I effectively given you?' },
+      { who: 'alex', text: 'Umm... at expiry, if the stock is above $100, I\'d exercise the call and own the stock. If it\'s below $100, I just take the cash back. So... it\'s kind of like owning the stock but with a floor at $100?' },
+      { who: 'finn', text: 'Exactly! Call + Cash = owning the stock with downside protection. Now here\'s the key: what if instead I gave you the STOCK itself PLUS a PUT option (right to sell at $100)?' },
+      { who: 'alex', text: 'If the stock goes above $100, I keep the gains from the stock. If it falls below $100, I exercise the put and sell at $100. So... same payoff! Both strategies end up the same at expiry?' },
+      { who: 'finn', text: 'You\'ve just proved PUT-CALL PARITY! Because both portfolios produce identical payoffs at expiry, they must cost exactly the same today. Written as an equation: C + PV(K) = S + P. Or rearranged: C − P = S − PV(K). Where C = call price, P = put price, S = stock price, PV(K) = present value of strike.' },
+      { who: 'alex', text: 'What does PV(K) mean exactly?' },
+      { who: 'finn', text: 'PV(K) is the PRESENT VALUE of the strike price — how much you need to invest TODAY at the risk-free rate to have exactly $K (the strike) at expiry. If the strike is $100, expiry is 1 year, and risk-free rate is 5%, PV(K) = $100 ÷ 1.05 ≈ $95.24.' },
+      { who: 'alex', text: 'Let me try a real example. Call = $8, Put = $3, Stock = $100, Strike = $98, PV(K) = $95. Does parity hold?' },
+      { who: 'finn', text: 'Left side: C − P = $8 − $3 = $5. Right side: S − PV(K) = $100 − $95 = $5. They match — parity holds! No arbitrage is possible.' },
+      { who: 'alex', text: 'What if parity is violated? Say the call is $10 instead of $8?' },
+      { who: 'finn', text: 'Then C − P = $10 − $3 = $7, but S − PV(K) = $5. The left side is $2 too expensive. An arbitrageur would SELL the call, BUY the put, BUY the stock, and BORROW PV(K). The combined position earns a risk-free $2 profit per share. They\'d do this in massive size until the prices adjust and parity is restored.' },
+      { who: 'alex', text: 'So parity is maintained because any violation gets instantly arbitraged away?' },
+      { who: 'finn', text: 'Exactly. Put-call parity is enforced by arbitrage — the market\'s immune system. It\'s also enormously useful practically: if you know three of the four values (call, put, stock, strike), you can calculate the fourth. And it allows you to CREATE synthetic positions — e.g., a synthetic long call = long stock + long put.' },
+      { who: 'narrator', text: 'Put-call parity is one of the fundamental no-arbitrage relationships in finance. It was formalized by Hans Stoll in 1969 and forms the backbone of all options pricing theory. Any options trader who ignores it is leaving free money on the table — or risking being arbitraged against.' },
+    ],
+    concept: 'Put-Call Parity: C − P = S − PV(K). A call plus cash equals a stock plus a put (both give same payoff). Violation creates risk-free arbitrage. Used to price synthetic positions. Foundation of all options pricing theory.',
+    quiz: [
+      { q: 'C = $6, S = $100, PV(K) = $97. Using put-call parity C − P = S − PV(K), what should the put price P be?', opts: ['$3', '$6', '$97', '$9'], ans: 0, exp: 'C − P = S − PV(K) → $6 − P = $100 − $97 = $3 → P = $6 − $3 = $3. If the put traded at any other price, arbitrage would be possible.' },
+      { q: 'Put-call parity is ultimately maintained by:', opts: ['Arbitrage — traders immediately exploit any violation for risk-free profit', 'Government regulation of options prices', 'Market makers agreeing to keep prices equal', 'The exchange setting call and put prices daily'], ans: 0, exp: 'Any violation of parity creates a risk-free profit. Arbitrageurs immediately trade to capture it, which restores the relationship. Parity holds because violations are instantly and aggressively exploited.' }
+    ]
+  },
+  {
+    id: 'payoffs', num: 20, icon: '📐', title: 'Payoffs',
     tag: 'Mapping your profit and loss',
     scene: '📐📊💹',
     dialogues: [
@@ -314,7 +541,7 @@ const CHAPTERS = [
     ]
   },
   {
-    id: 'hedging', num: 13, icon: '🛡️', title: 'Hedging',
+    id: 'hedging', num: 21, icon: '🛡️', title: 'Hedging',
     tag: 'Insurance for your investments',
     scene: '🛡️📉😌',
     dialogues: [
@@ -340,7 +567,7 @@ const CHAPTERS = [
     ]
   },
   {
-    id: 'otc', num: 14, icon: '🤝', title: 'OTC Market',
+    id: 'otc', num: 22, icon: '🤝', title: 'OTC Market',
     tag: 'Direct deals, no exchange needed',
     scene: '🤝🏢📋',
     dialogues: [
@@ -366,7 +593,7 @@ const CHAPTERS = [
     ]
   },
   {
-    id: 'crypto', num: 15, icon: '₿', title: 'Cryptocurrencies',
+    id: 'crypto', num: 23, icon: '₿', title: 'Cryptocurrencies',
     tag: 'Digital money and blockchain',
     scene: '₿🔗💻🌐',
     dialogues: [

@@ -629,23 +629,27 @@ runLoader(checkSession);
 
 // ===== MAP =====
 
-const MAP_PATH_D = "M120,90 L450,90 L780,90 C870,90 870,240 780,240 L450,240 L120,240 C30,240 30,390 120,390 L450,390 L780,390 C870,390 870,540 780,540 L450,540 L120,540 C30,540 30,690 120,690 L450,690 L780,690";
+const MAP_PATH_D = "M120,90 L450,90 L780,90 C870,90 870,240 780,240 L450,240 L120,240 C30,240 30,390 120,390 L450,390 L780,390 C870,390 870,540 780,540 L450,540 L120,540 C30,540 30,690 120,690 L450,690 L780,690 C870,690 870,840 780,840 L450,840 L120,840 C30,840 30,990 120,990 L450,990 L780,990 C870,990 870,1140 780,1140 L450,1140 L120,1140";
 
 const MAP_POS = [
   [120,90],[450,90],[780,90],
   [780,240],[450,240],[120,240],
   [120,390],[450,390],[780,390],
   [780,540],[450,540],[120,540],
-  [120,690],[450,690],[780,690]
+  [120,690],[450,690],[780,690],
+  [780,840],[450,840],[120,840],
+  [120,990],[450,990],[780,990],
+  [780,1140],[450,1140],[120,1140]
 ];
 
-const MAP_OFFSETS = [0,0.085,0.170,0.207,0.293,0.378,0.415,0.500,0.585,0.623,0.708,0.793,0.830,0.915,1.000];
+// 23 chapters across 8 rows (last row only uses 2 of 3 slots)
+const MAP_OFFSETS = [0,0.052,0.105,0.128,0.180,0.233,0.256,0.308,0.361,0.384,0.436,0.489,0.512,0.564,0.616,0.640,0.692,0.744,0.767,0.820,0.872,0.895,0.948];
 
 let _bagAnimPending = null;
 
 function renderMap() {
   document.getElementById('map-coins').textContent = state.coins;
-  document.getElementById('map-prog').textContent  = state.done.length + '/15';
+  document.getElementById('map-prog').textContent  = state.done.length + '/' + CHAPTERS.length;
 
   const nodesHTML = CHAPTERS.map((ch, i) => {
     const [cx, cy] = MAP_POS[i];
@@ -700,7 +704,7 @@ function renderMap() {
   const g = document.getElementById('chapters-grid');
   g.innerHTML = `
     <div class="map-frame">
-    <svg id="map-svg" viewBox="0 0 900 780" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block">
+    <svg id="map-svg" viewBox="0 0 900 1240" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block">
       <defs>
         <!-- Progress path gradient -->
         <linearGradient id="mn-pg" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -745,9 +749,9 @@ function renderMap() {
       </defs>
 
       <!-- Base + grid + vignette -->
-      <rect width="900" height="780" fill="#080816"/>
-      <rect width="900" height="780" fill="url(#mn-grid)"/>
-      <rect width="900" height="780" fill="url(#mn-vig)"/>
+      <rect width="900" height="1240" fill="#080816"/>
+      <rect width="900" height="1240" fill="url(#mn-grid)"/>
+      <rect width="900" height="1240" fill="url(#mn-vig)"/>
 
       <!-- Subtle city-block shapes -->
       <g fill="none" stroke="#1c1c44" stroke-width="0.7" opacity="0.55">
@@ -759,12 +763,20 @@ function renderMap() {
         <rect x="488" y="408" width="234" height="114" rx="4"/>
         <rect x="178" y="558" width="234" height="114" rx="4"/>
         <rect x="488" y="558" width="234" height="114" rx="4"/>
+        <rect x="178" y="708" width="234" height="114" rx="4"/>
+        <rect x="488" y="708" width="234" height="114" rx="4"/>
+        <rect x="178" y="858" width="234" height="114" rx="4"/>
+        <rect x="488" y="858" width="234" height="114" rx="4"/>
+        <rect x="178" y="1008" width="234" height="114" rx="4"/>
+        <rect x="488" y="1008" width="234" height="114" rx="4"/>
       </g>
 
       <!-- Street-corner circles (give a real city-map feel) -->
       <g fill="none" stroke="#1e1e46" stroke-width="0.8" opacity="0.4">
         <circle cx="870" cy="165" r="75"/> <circle cx="30"  cy="315" r="75"/>
         <circle cx="870" cy="465" r="75"/> <circle cx="30"  cy="615" r="75"/>
+        <circle cx="870" cy="765" r="75"/> <circle cx="30"  cy="915" r="75"/>
+        <circle cx="870" cy="1065" r="75"/> <circle cx="30" cy="1065" r="75"/>
       </g>
 
       <!-- City landmark icons -->
@@ -791,7 +803,15 @@ function renderMap() {
       </g>
 
       <!-- FINCITY watermark -->
-      <text x="450" y="763" text-anchor="middle" font-size="11" fill="#28285a"
+      <text x="40"  y="778" font-size="22" opacity=".26">🏦</text>
+      <text x="834" y="778" font-size="22" opacity=".26">🌳</text>
+      <text x="40"  y="928" font-size="22" opacity=".26">🏢</text>
+      <text x="834" y="928" font-size="22" opacity=".26">🏛️</text>
+      <text x="40"  y="1078" font-size="22" opacity=".26">🌳</text>
+      <text x="834" y="1078" font-size="22" opacity=".26">🏗️</text>
+      <text x="40"  y="1120" font-size="16" opacity=".22">⚖️ Arb</text>
+      <text x="834" y="1120" font-size="16" opacity=".22">🔄 PCP</text>
+      <text x="450" y="1222" text-anchor="middle" font-size="11" fill="#28285a"
             font-weight="700" letter-spacing="6" font-family="system-ui,sans-serif">🏙️  F I N C I T Y</text>
 
       <!-- Dashed background path -->
@@ -1010,6 +1030,14 @@ function renderInteractive(ch, el) {
 
   const area = document.getElementById('game-area');
   const games = {
+    'equity': initEquityGame,
+    'inflation': initInflationGame,
+    'bonds': initBondsGame,
+    'credit': initCreditGame,
+    'taxes': initTaxGame,
+    'arbitrage': initArbitrageGame,
+    'options-basics': initOptionsBasicsGame,
+    'put-call-parity': initPutCallGame,
     'stock-market': initStockGame,
     'bid-ask': initBidAskGame,
     'trading': initTradingGame,
@@ -1641,6 +1669,270 @@ function initCryptoGame(el) {
   render();
 }
 
+// ===== NEW CHAPTER GAMES =====
+
+function initEquityGame(el) {
+  let assets = 500000, liabilities = 300000;
+  function render() {
+    const equity = assets - liabilities;
+    const debtPct = (liabilities / assets * 100).toFixed(1);
+    const eqPct   = (equity / assets * 100).toFixed(1);
+    el.innerHTML = `
+      <div style="font-size:13px;color:var(--muted);margin-bottom:10px">📊 Interactive Balance Sheet</div>
+      <div class="wallet">
+        <div class="wallet-item"><div class="wallet-label">🏢 Total Assets</div><div class="wallet-value" style="color:var(--blue)">$${assets.toLocaleString()}</div></div>
+        <div class="wallet-item"><div class="wallet-label">💰 Liabilities</div><div class="wallet-value" style="color:var(--red)">$${liabilities.toLocaleString()}</div></div>
+        <div class="wallet-item"><div class="wallet-label">💼 Equity</div><div class="wallet-value" style="color:${equity>=0?'var(--green)':'var(--red)'}">$${equity.toLocaleString()}</div></div>
+      </div>
+      <div style="font-size:13px;color:var(--muted);margin-top:10px;margin-bottom:4px">Total Assets: <b style="color:var(--blue)">$${assets.toLocaleString()}</b></div>
+      <input type="range" min="100000" max="2000000" step="50000" value="${assets}" oninput="setEQ('a',this.value)">
+      <div style="font-size:13px;color:var(--muted);margin-top:10px;margin-bottom:4px">Total Liabilities: <b style="color:var(--red)">$${liabilities.toLocaleString()}</b></div>
+      <input type="range" min="0" max="${assets}" step="10000" value="${Math.min(liabilities,assets)}" oninput="setEQ('l',this.value)">
+      <div class="flex gap8 mt14">
+        <div style="flex:1;background:var(--card2);border-radius:10px;padding:12px;text-align:center">
+          <div style="font-size:11px;color:var(--muted)">Debt Ratio</div>
+          <div style="font-size:22px;font-weight:700;color:${debtPct>70?'var(--red)':debtPct>40?'var(--gold)':'var(--green)'}">${debtPct}%</div>
+        </div>
+        <div style="flex:1;background:var(--card2);border-radius:10px;padding:12px;text-align:center">
+          <div style="font-size:11px;color:var(--muted)">Equity Ratio</div>
+          <div style="font-size:22px;font-weight:700;color:${eqPct>60?'var(--green)':eqPct>30?'var(--gold)':'var(--red)'}">${eqPct}%</div>
+        </div>
+      </div>
+      <div class="info-box mt12">${equity<=0?'⚠️ Negative equity — liabilities exceed assets. Technically insolvent!':equity/assets>0.6?'✅ Strong equity: low leverage, financially healthy.':'💼 Equity = Assets − Liabilities = $'+equity.toLocaleString()+'. This is what shareholders own after paying all debts.'}</div>`;
+    window.setEQ = (f,v) => { if(f==='a'){assets=parseInt(v);liabilities=Math.min(liabilities,assets);}else{liabilities=parseInt(v);}render(); };
+  }
+  render();
+}
+
+function initInflationGame(el) {
+  let rate=3, yrs=20;
+  function render() {
+    const pp  = (1000/Math.pow(1+rate/100,yrs)).toFixed(2);
+    const stk = (7-rate).toFixed(1), bnd = (4-rate).toFixed(1), sav = (1-rate).toFixed(1);
+    el.innerHTML = `
+      <div class="flex gap8" style="margin-bottom:12px;flex-wrap:wrap">
+        <div style="flex:1;min-width:140px"><div style="font-size:12px;color:var(--muted);margin-bottom:4px">Inflation Rate: <b style="color:var(--red)">${rate}%/yr</b></div><input type="range" min="1" max="15" value="${rate}" oninput="setINF('r',this.value)"></div>
+        <div style="flex:1;min-width:140px"><div style="font-size:12px;color:var(--muted);margin-bottom:4px">Years: <b style="color:var(--gold)">${yrs}</b></div><input type="range" min="1" max="40" value="${yrs}" oninput="setINF('y',this.value)"></div>
+      </div>
+      <div style="text-align:center;margin-bottom:14px">
+        <div style="font-size:12px;color:var(--muted)">Today's $1,000 has the purchasing power of...</div>
+        <div class="big-number red">$${pp}</div>
+        <div style="font-size:13px;color:var(--muted)">after ${yrs} years of ${rate}% inflation</div>
+      </div>
+      <div style="font-size:13px;font-weight:600;color:var(--muted);margin-bottom:8px">Real returns after ${rate}% inflation:</div>
+      ${[['📈 Stocks (7% avg)',stk],['🔗 Bonds (4% avg)',bnd],['🏦 Savings (1% avg)',sav]].map(([l,r])=>`
+        <div class="flex items-center justify-between" style="background:var(--card2);border-radius:8px;padding:10px 14px;margin-bottom:6px">
+          <span style="font-size:13px">${l}</span>
+          <span style="font-size:15px;font-weight:700;color:${parseFloat(r)>0?'var(--green)':'var(--red)'}">${parseFloat(r)>0?'+':''}${r}% real</span>
+        </div>`).join('')}
+      <div class="info-box mt12">💡 Only investments that return MORE than inflation grow your real purchasing power. Cash loses every year inflation exceeds the savings rate.</div>`;
+    window.setINF=(f,v)=>{if(f==='r')rate=parseInt(v);else yrs=parseInt(v);render();};
+  }
+  render();
+}
+
+function initBondsGame(el) {
+  let coupon=5, mktRate=5, face=1000, term=10;
+  function render() {
+    const c   = face * coupon/100;
+    const pv  = c*(1-Math.pow(1+mktRate/100,-term))/(mktRate/100) + face/Math.pow(1+mktRate/100,term);
+    const yld = (c/pv*100).toFixed(2);
+    const status = pv>face+1?'Premium ↑':pv<face-1?'Discount ↓':'Par ≈';
+    el.innerHTML = `
+      <div class="wallet">
+        <div class="wallet-item"><div class="wallet-label">📄 Face Value</div><div class="wallet-value">$${face}</div></div>
+        <div class="wallet-item"><div class="wallet-label">🎫 Annual Coupon</div><div class="wallet-value" style="color:var(--green)">$${c}</div></div>
+        <div class="wallet-item"><div class="wallet-label">⏱️ Years Left</div><div class="wallet-value">${term}</div></div>
+      </div>
+      <div style="font-size:13px;color:var(--muted);margin-top:10px;margin-bottom:4px">Coupon Rate: <b style="color:var(--accent2)">${coupon}%</b></div>
+      <input type="range" min="1" max="15" step="0.5" value="${coupon}" oninput="setBD('c',this.value)">
+      <div style="font-size:13px;color:var(--muted);margin-top:10px;margin-bottom:4px">Market Rate: <b style="color:var(--gold)">${mktRate}%</b></div>
+      <input type="range" min="1" max="15" step="0.5" value="${mktRate}" oninput="setBD('r',this.value)">
+      <div style="font-size:13px;color:var(--muted);margin-top:10px;margin-bottom:4px">Years to Maturity: <b style="color:var(--blue)">${term}</b></div>
+      <input type="range" min="1" max="30" value="${term}" oninput="setBD('t',this.value)">
+      <div style="text-align:center;margin-top:16px;background:var(--card2);border-radius:12px;padding:14px">
+        <div style="font-size:12px;color:var(--muted)">Fair Market Price</div>
+        <div class="big-number ${pv>face+1?'green':pv<face-1?'red':'gold'}">$${pv.toFixed(2)}</div>
+        <div style="font-size:12px;color:var(--muted)">Yield: <b>${yld}%</b> · ${status}</div>
+      </div>
+      <div class="info-box mt12">${mktRate>coupon?'📉 Market rates > coupon → bond price FALLS below face value (discount). New bonds pay more.':mktRate<coupon?'📈 Market rates < coupon → bond price RISES above face value (premium). Old bonds pay more!':'⚖️ Rates = coupon → bond trades at exactly face value (par).'}</div>`;
+    window.setBD=(f,v)=>{if(f==='c')coupon=parseFloat(v);if(f==='r')mktRate=parseFloat(v);if(f==='t')term=parseInt(v);render();};
+  }
+  render();
+}
+
+function initCreditGame(el) {
+  let dr=30, ic=8, cr=2.5, pm=15;
+  function getRating() {
+    let s=0;
+    if(dr<30)s+=3;else if(dr<50)s+=2;else if(dr<70)s+=1;
+    if(ic>8)s+=3;else if(ic>4)s+=2;else if(ic>2)s+=1;
+    if(cr>2)s+=2;else if(cr>1)s+=1;
+    if(pm>15)s+=2;else if(pm>8)s+=1;
+    if(s>=9)return{r:'AAA',c:'var(--green)',sp:'0.2%',d:'Prime — lowest risk'};
+    if(s>=7)return{r:'AA', c:'var(--green)',sp:'0.5%',d:'High grade'};
+    if(s>=5)return{r:'BBB',c:'var(--gold)', sp:'1.5%',d:'Investment grade'};
+    if(s>=3)return{r:'BB', c:'var(--red)',  sp:'3.5%',d:'Speculative / Junk'};
+    return{r:'CCC',c:'var(--red)',sp:'8%',d:'Near default'};
+  }
+  function render() {
+    const rt=getRating();
+    el.innerHTML = `
+      <div style="font-size:13px;color:var(--muted);margin-bottom:4px">Debt/Assets: <b style="color:${dr>60?'var(--red)':'var(--green)'}">${dr}%</b></div>
+      <input type="range" min="0" max="100" step="5" value="${dr}" oninput="setCRD('dr',this.value)">
+      <div style="font-size:13px;color:var(--muted);margin-top:10px;margin-bottom:4px">Interest Coverage: <b style="color:${ic<2?'var(--red)':'var(--green)'}">${ic}x</b></div>
+      <input type="range" min="0.5" max="20" step="0.5" value="${ic}" oninput="setCRD('ic',this.value)">
+      <div style="font-size:13px;color:var(--muted);margin-top:10px;margin-bottom:4px">Current Ratio: <b style="color:${cr<1?'var(--red)':'var(--green)'}">${cr}x</b></div>
+      <input type="range" min="0.5" max="5" step="0.1" value="${cr}" oninput="setCRD('cr',this.value)">
+      <div style="font-size:13px;color:var(--muted);margin-top:10px;margin-bottom:4px">Profit Margin: <b style="color:${pm<5?'var(--red)':'var(--green)'}">${pm}%</b></div>
+      <input type="range" min="-10" max="40" value="${pm}" oninput="setCRD('pm',this.value)">
+      <div style="text-align:center;margin-top:16px;background:var(--card2);border-radius:12px;padding:16px">
+        <div style="font-size:12px;color:var(--muted)">Credit Rating</div>
+        <div style="font-size:52px;font-weight:900;color:${rt.c}">${rt.r}</div>
+        <div style="font-size:13px;color:var(--muted)">${rt.d}</div>
+        <div style="font-size:14px;margin-top:8px">Spread above Treasury: <b style="color:${rt.c}">+${rt.sp}</b></div>
+      </div>`;
+    window.setCRD=(f,v)=>{if(f==='dr')dr=parseInt(v);if(f==='ic')ic=parseFloat(v);if(f==='cr')cr=parseFloat(v);if(f==='pm')pm=parseInt(v);render();};
+  }
+  render();
+}
+
+function initTaxGame(el) {
+  let gain=10000, months=18, bracket=24;
+  function render() {
+    const isShort = months < 12;
+    const ltRate  = bracket<=15?0:bracket<=35?15:20;
+    const tax     = isShort ? gain*bracket/100 : gain*ltRate/100;
+    const saving  = isShort ? gain*(bracket-ltRate)/100 : 0;
+    el.innerHTML = `
+      <div style="font-size:13px;color:var(--muted);margin-bottom:4px">Capital Gain: <b style="color:var(--gold)">$${gain.toLocaleString()}</b></div>
+      <input type="range" min="1000" max="100000" step="1000" value="${gain}" oninput="setTX('g',this.value)">
+      <div style="font-size:13px;color:var(--muted);margin-top:10px;margin-bottom:4px">Holding Period: <b style="color:${isShort?'var(--red)':'var(--green)'}">${months} months</b> — <b>${isShort?'SHORT-term':'LONG-term'}</b></div>
+      <input type="range" min="1" max="36" value="${months}" oninput="setTX('m',this.value)">
+      <div style="font-size:13px;color:var(--muted);margin-top:10px;margin-bottom:4px">Income Bracket: <b style="color:var(--accent2)">${bracket}%</b></div>
+      <input type="range" min="10" max="37" step="1" value="${bracket}" oninput="setTX('b',this.value)">
+      <div class="flex gap8 mt14">
+        <div style="flex:1;background:var(--card2);border-radius:10px;padding:12px;text-align:center">
+          <div style="font-size:11px;color:var(--muted)">Tax Rate</div>
+          <div style="font-size:22px;font-weight:700;color:var(--red)">${isShort?bracket:ltRate}%</div>
+        </div>
+        <div style="flex:1;background:var(--card2);border-radius:10px;padding:12px;text-align:center">
+          <div style="font-size:11px;color:var(--muted)">Tax Owed</div>
+          <div style="font-size:22px;font-weight:700;color:var(--red)">-$${tax.toLocaleString()}</div>
+        </div>
+        <div style="flex:1;background:var(--card2);border-radius:10px;padding:12px;text-align:center">
+          <div style="font-size:11px;color:var(--muted)">After-Tax</div>
+          <div style="font-size:22px;font-weight:700;color:var(--green)">$${(gain-tax).toLocaleString()}</div>
+        </div>
+      </div>
+      <div class="info-box mt12">${isShort?`⚠️ Short-term: taxed at full income rate (${bracket}%). Holding ${12-months} more month${12-months!==1?'s':''} saves $${saving.toLocaleString()} in tax!`:`✅ Long-term: taxed at preferential ${ltRate}% rate. Patient investing is rewarded by the tax code.`}</div>`;
+    window.setTX=(f,v)=>{if(f==='g')gain=parseInt(v);if(f==='m')months=parseInt(v);if(f==='b')bracket=parseInt(v);render();};
+  }
+  render();
+}
+
+function initArbitrageGame(el) {
+  const cases = [
+    {d:'Same stock: NYSE $100.00 vs NASDAQ $100.60',arb:true,exp:'Buy on NYSE at $100, sell on NASDAQ at $100.60 → $0.60/share risk-free profit. In practice algorithms close this in milliseconds.'},
+    {d:'Gold in London: $1,950/oz · Gold in New York: $1,950/oz',arb:false,exp:'Same price — no arbitrage. Any gap smaller than transaction costs also won\'t be worth exploiting.'},
+    {d:'EUR/USD=1.10, USD/GBP=0.80, EUR/GBP should = 0.88 but shows 0.90',arb:true,exp:'Triangular FX arb: €1 → $1.10 → £0.88 (at fair rate), but the EUR/GBP quote gives £0.90. Buy GBP cheap via USD, sell via direct EUR/GBP.'},
+    {d:'BananaCo call $6, put $3, stock $100, strike $98 → C−P should = S−PV(K)=$3, but C−P=$3',arb:false,exp:'C−P = $6−$3 = $3. S−PV(K) = $3. Parity holds — no arb.'},
+  ];
+  let answers=new Array(cases.length).fill(null), done=false;
+  function render() {
+    const all=answers.every(a=>a!==null);
+    el.innerHTML = `
+      <div style="font-size:13px;color:var(--muted);margin-bottom:12px">Is there an arbitrage opportunity in each scenario?</div>
+      ${cases.map((c,i)=>`
+        <div style="background:var(--card2);border-radius:10px;padding:12px;margin-bottom:8px">
+          <div style="font-size:13px;margin-bottom:8px">${c.d}</div>
+          <div style="display:flex;gap:8px;margin-bottom:${done?'8px':'0'}">
+            ${[['✅ Arb!',true],['❌ No Arb',false]].map(([lbl,v])=>{
+              const sel=answers[i]===v;
+              let cls=sel?'btn-primary':'btn-ghost';
+              if(done)cls=v===c.arb?'btn-green':(sel?'btn-red':'btn-ghost');
+              return `<button class="btn btn-sm ${cls}" onclick="setARB(${i},${v})" ${done?'disabled':''}>${lbl}</button>`;
+            }).join('')}
+          </div>
+          ${done?`<div style="font-size:12px;color:var(--muted);font-style:italic">${c.exp}</div>`:''}
+        </div>`).join('')}
+      ${!done?`<button class="btn btn-primary" style="width:100%;margin-top:4px" onclick="submitARB()" ${all?'':'disabled'}>Check</button>`:''}
+      ${done?`<div class="info-box green mt12">⚖️ True arbitrage = risk-free profit from price discrepancy. It enforces the Law of One Price — identical assets MUST trade at the same price everywhere.</div>`:''}`;
+    window.setARB=(i,v)=>{if(!done){answers[i]=v;render();}};
+    window.submitARB=()=>{done=true;render();};
+  }
+  render();
+}
+
+function initOptionsBasicsGame(el) {
+  let spot=100, strike=100, vol=25, days=90;
+  function norm(x){return 0.5*(1+Math.sign(x)*Math.sqrt(1-Math.exp(-2*x*x/Math.PI)));}
+  function render() {
+    const t=days/365, s=vol/100;
+    const d1=(Math.log(spot/strike)+(0.05+s*s/2)*t)/(s*Math.sqrt(t));
+    const d2=d1-s*Math.sqrt(t);
+    const call=spot*norm(d1)-strike*Math.exp(-0.05*t)*norm(d2);
+    const intr=Math.max(0,spot-strike);
+    const tv=Math.max(0,call-intr);
+    const delta=norm(d1);
+    el.innerHTML = `
+      <div style="font-size:13px;color:var(--muted);margin-bottom:4px">Spot: <b style="color:var(--accent2)">$${spot}</b></div>
+      <input type="range" min="60" max="160" value="${spot}" oninput="setOBG('s',this.value)">
+      <div style="font-size:13px;color:var(--muted);margin-top:8px;margin-bottom:4px">Strike: <b style="color:var(--gold)">$${strike}</b></div>
+      <input type="range" min="60" max="160" value="${strike}" oninput="setOBG('k',this.value)">
+      <div style="font-size:13px;color:var(--muted);margin-top:8px;margin-bottom:4px">Volatility: <b style="color:var(--red)">${vol}%</b></div>
+      <input type="range" min="5" max="80" value="${vol}" oninput="setOBG('v',this.value)">
+      <div style="font-size:13px;color:var(--muted);margin-top:8px;margin-bottom:4px">Days to Expiry: <b style="color:var(--blue)">${days}</b></div>
+      <input type="range" min="1" max="365" value="${days}" oninput="setOBG('d',this.value)">
+      <div class="flex gap8 mt14" style="flex-wrap:wrap">
+        ${[['Call Price','$'+call.toFixed(2),'var(--green)'],['Intrinsic','$'+intr.toFixed(2),'var(--gold)'],['Time Value','$'+tv.toFixed(2),'var(--accent2)'],['Delta Δ',delta.toFixed(2),'var(--blue)']].map(([l,v,c])=>`
+          <div style="flex:1;min-width:90px;background:var(--card2);border-radius:10px;padding:12px;text-align:center">
+            <div style="font-size:11px;color:var(--muted)">${l}</div>
+            <div style="font-size:19px;font-weight:700;color:${c}">${v}</div>
+          </div>`).join('')}
+      </div>
+      <div class="info-box mt12">${spot>strike?`✅ ITM: intrinsic = $${intr}. Delta ${delta.toFixed(2)}: $1 stock move ≈ $${delta.toFixed(2)} option move.`:`OTM: all value is time value ($${tv.toFixed(2)}). Stock must rise above $${strike} before expiry.`} Raising vol increases time value — more chance of a big move.</div>`;
+    window.setOBG=(f,v)=>{if(f==='s')spot=parseInt(v);if(f==='k')strike=parseInt(v);if(f==='v')vol=parseInt(v);if(f==='d')days=parseInt(v);render();};
+  }
+  render();
+}
+
+function initPutCallGame(el) {
+  let C=8, P=3, S=100, K=95, r=5, T=1;
+  function render() {
+    const pvK=K*Math.exp(-r/100*T);
+    const lhs=(C-P).toFixed(2), rhs=(S-pvK).toFixed(2);
+    const diff=Math.abs(parseFloat(lhs)-parseFloat(rhs));
+    const ok=diff<0.5;
+    el.innerHTML = `
+      <div style="text-align:center;padding:14px;background:var(--card2);border-radius:10px;margin-bottom:14px">
+        <div style="font-size:12px;color:var(--muted)">Put-Call Parity</div>
+        <div style="font-size:20px;font-weight:700;color:var(--accent2);margin-top:4px">C − P = S − PV(K)</div>
+      </div>
+      <div class="flex gap8" style="flex-wrap:wrap;margin-bottom:10px">
+        ${[['Call (C)',C,0,30,'callPCP'],['Put (P)',P,0,30,'putPCP'],['Spot (S)',S,60,150,'spotPCP'],['Strike (K)',K,60,150,'strikePCP']].map(([l,v,mn,mx,id])=>`
+          <div style="flex:1;min-width:150px">
+            <div style="font-size:12px;color:var(--muted);margin-bottom:4px">${l}: <b>$${v}</b></div>
+            <input type="range" min="${mn}" max="${mx}" step="0.5" value="${v}" oninput="setPCP2('${id}',this.value)">
+          </div>`).join('')}
+      </div>
+      <div class="flex gap8 mt8">
+        <div style="flex:1;background:var(--card2);border-radius:10px;padding:12px;text-align:center">
+          <div style="font-size:11px;color:var(--muted)">C − P</div>
+          <div style="font-size:24px;font-weight:700;color:var(--accent2)">${lhs}</div>
+        </div>
+        <div style="display:flex;align-items:center;font-size:20px;padding:0 8px">${ok?'=':'≠'}</div>
+        <div style="flex:1;background:var(--card2);border-radius:10px;padding:12px;text-align:center">
+          <div style="font-size:11px;color:var(--muted)">S − PV(K)</div>
+          <div style="font-size:24px;font-weight:700;color:var(--gold)">${rhs}</div>
+        </div>
+      </div>
+      <div class="info-box ${ok?'green':'red'} mt12">${ok?'✅ Parity holds — no arbitrage possible.':'⚠️ Parity violated by $'+diff.toFixed(2)+'! An arb trader would immediately exploit this for risk-free profit, closing the gap.'}</div>`;
+    window.setPCP2=(id,v)=>{if(id==='callPCP')C=parseFloat(v);if(id==='putPCP')P=parseFloat(v);if(id==='spotPCP')S=parseFloat(v);if(id==='strikePCP')K=parseFloat(v);render();};
+  }
+  render();
+}
+
 // ===== QUIZ =====
 let _quizSelected = -1;  // index of selected option, -1 = none
 
@@ -1729,12 +2021,12 @@ function completeChapter() {
       <div class="complete-title">${ch.title} Complete!</div>
       <div class="complete-sub">You've mastered the basics of ${ch.title.toLowerCase()}.</div>
       <div class="coins-badge">🪙 +100 FinCoins</div>
-      <div style="color:var(--muted);font-size:13px;margin-bottom:24px">${state.done.length}/15 chapters done · ${state.coins} coins total</div>
+      <div style="color:var(--muted);font-size:13px;margin-bottom:24px">${state.done.length}/${CHAPTERS.length} chapters done · ${state.coins} coins total</div>
       <div class="flex gap8 justify-center flex-wrap">
-        ${state.done.length < 15 ? `<button class="btn btn-primary" onclick="openChapter('${CHAPTERS[CHAPTERS.findIndex(c=>c.id===ch.id)+1]?.id}')">Next Chapter →</button>` : ''}
+        ${state.done.length < CHAPTERS.length ? `<button class="btn btn-primary" onclick="openChapter('${CHAPTERS[CHAPTERS.findIndex(c=>c.id===ch.id)+1]?.id}')">Next Chapter →</button>` : ''}
         <button class="btn btn-ghost" onclick="showMap()">🗺️ Back to Map</button>
       </div>
-      ${state.done.length===15 ? '<div class="info-box green mt16">🏆 YOU\'VE MASTERED ALL OF FINCITY! Incredible work!</div>' : ''}
+      ${state.done.length === CHAPTERS.length ? '<div class="info-box green mt16">🏆 YOU\'VE MASTERED ALL OF FINCITY! Incredible work!</div>' : ''}
     </div>`;
   document.getElementById('phase-nav').innerHTML = '';
   document.getElementById('ch-coins').textContent = state.coins;
