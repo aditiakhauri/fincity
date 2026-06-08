@@ -350,6 +350,64 @@ canvas{border-radius:8px;display:block;width:100%}
 .vt-btn{background:transparent;border:none;border-radius:50px;padding:7px 22px;font-size:13px;font-weight:600;cursor:pointer;color:var(--muted);transition:all .18s;line-height:1;white-space:nowrap}
 .vt-btn.active{background:var(--card2);color:var(--text);box-shadow:0 2px 8px rgba(0,0,0,.25)}
 .vt-btn:hover:not(.active){color:var(--text)}
+
+/* GAME ANIMATIONS */
+@keyframes coinFloat{0%{opacity:1;transform:translateY(0) scale(1) rotate(0deg)}100%{opacity:0;transform:translateY(-100px) scale(.2) rotate(400deg)}}
+@keyframes confettiFall{0%{opacity:1;transform:translateY(0) rotate(0deg)}100%{opacity:0;transform:translateY(105vh) rotate(720deg)}}
+@keyframes gcShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-11px)}40%{transform:translateX(11px)}60%{transform:translateX(-7px)}80%{transform:translateX(7px)}}
+@keyframes gcCharBounce{0%,100%{transform:translateY(0) scale(1)}35%{transform:translateY(-10px) scale(1.14)}70%{transform:translateY(-5px) scale(1.06)}}
+@keyframes flashGreen{0%,100%{background:transparent}40%{background:rgba(0,200,150,.15);border-radius:12px}}
+@keyframes flashRed{0%,100%{background:transparent}40%{background:rgba(255,96,128,.15);border-radius:12px}}
+@keyframes gameFloatUp{0%{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}100%{opacity:0;transform:translateX(-50%) translateY(-85px) scale(.55)}}
+@keyframes numPop{0%,100%{transform:scale(1)}45%{transform:scale(1.35) }}
+@keyframes slideInUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes winBurst{0%{opacity:0;transform:scale(.82)}55%{transform:scale(1.06)}100%{opacity:1;transform:scale(1)}}
+@keyframes priceUp{0%,100%{color:inherit}50%{color:#00c896;transform:scale(1.12)}}
+@keyframes priceDn{0%,100%{color:inherit}50%{color:#ff6080;transform:scale(1.12)}}
+@keyframes gcSlideIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}
+.gwin{animation:winBurst .52s cubic-bezier(.34,1.56,.64,1)!important}
+.sc-item{animation:slideInUp .28s ease both}
+.sc-item:nth-child(2){animation-delay:.07s}
+.sc-item:nth-child(3){animation-delay:.13s}
+.gp{animation:slideInUp .22s ease both}
+.gc{animation:gcSlideIn .3s ease}
+.price-up-anim{animation:priceUp .4s ease}
+.price-dn-anim{animation:priceDn .4s ease}
+/* GAME CHARACTERS */
+.gc{display:flex;align-items:flex-start;gap:11px;margin-bottom:14px}
+.gc-av{width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;position:relative;border:2px solid}
+.gc-mood{position:absolute;bottom:-3px;right:-3px;font-size:13px;line-height:1}
+.gc-bubble{flex:1;background:var(--card2);border-radius:12px;padding:9px 12px;position:relative;border:1px solid rgba(255,255,255,.07)}
+.gc-bubble::before{content:'';position:absolute;left:-7px;top:15px;width:0;height:0;border-top:6px solid transparent;border-bottom:6px solid transparent;border-right:7px solid var(--card2)}
+.gc-name{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px}
+.gc-text{font-size:13px;line-height:1.45;color:var(--text)}
+/* GOAL PANEL */
+.gp{background:linear-gradient(135deg,rgba(124,109,250,.1),rgba(0,200,150,.05));border:1px solid rgba(124,109,250,.25);border-radius:11px;padding:11px 14px;margin-bottom:13px}
+.gp-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.gp-bar{height:5px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden}
+.gp-fill{height:100%;background:linear-gradient(90deg,#7c6dfa,#00c896);border-radius:3px;transition:width .4s ease}
+/* WIN SCREEN */
+.gwin{text-align:center;padding:20px 14px;background:linear-gradient(135deg,rgba(0,200,150,.09),rgba(255,197,0,.05));border:1px solid var(--green);border-radius:14px;margin-top:10px;animation:gwinIn .4s ease}
+@keyframes gwinIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+/* STAT CARDS */
+.sc{display:grid;gap:8px;margin-bottom:12px}
+.sc-3{grid-template-columns:repeat(3,1fr)}
+.sc-2{grid-template-columns:repeat(2,1fr)}
+.sc-4{grid-template-columns:repeat(4,1fr)}
+.sc-item{background:var(--card2);border-radius:10px;padding:10px 8px;text-align:center}
+.sc-label{font-size:10px;color:var(--muted);margin-bottom:3px}
+.sc-value{font-size:17px;font-weight:700}
+/* COIN BURST */
+@keyframes coinUp{0%{transform:translateY(0) scale(1);opacity:1}100%{transform:translateY(-55px) scale(.4);opacity:0}}
+.coin-burst{animation:coinUp .7s ease-out forwards;display:inline-block;pointer-events:none}
+/* PULSE BTN */
+@keyframes pulseBorder{0%,100%{box-shadow:0 0 0 0 rgba(124,109,250,.5)}50%{box-shadow:0 0 0 6px rgba(124,109,250,0)}}
+.btn-pulse{animation:pulseBorder 1.6s infinite}
+/* TICKER */
+@keyframes tickUp{0%{background:rgba(0,200,150,.25)}100%{background:transparent}}
+@keyframes tickDn{0%{background:rgba(255,96,128,.25)}100%{background:transparent}}
+.tick-up{animation:tickUp .4s ease}
+.tick-dn{animation:tickDn .4s ease}
 </style>
 </head>
 <body>
