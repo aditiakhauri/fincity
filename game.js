@@ -63,7 +63,7 @@ if (!sessionStorage.getItem('fincity_el_key')) sessionStorage.setItem('fincity_e
 let   _curAudio = null;   // currently playing <Audio> for ElevenLabs
 
 // ---------- Gemini AI Game Commentary ----------
-const _GEMINI_KEY = sessionStorage.getItem("fincity_gemini_key") || "";
+const _GEMINI_KEY = sessionStorage.getItem('fincity_gemini_key') || '';
 let _gcGen = 0;
 async function _gcRefresh(charName, topic, situation) {
   const gen = ++_gcGen;
