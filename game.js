@@ -57,9 +57,7 @@ const ELEVEN_VOICES = {
 const _nc       = {};     // translation cache
 const _elCache  = {};     // ElevenLabs audio cache: voiceId||text → blob URL
 let   _ns       = { playing: false, idx: 0, dlgs: [], lang: 'en', timer: null };
-const _EL_DEFAULT = 'sk_e45db2093c7934b60492dcc4db262eb6fc68acb3e69b6839';
-let   _elKey      = sessionStorage.getItem('fincity_el_key') || _EL_DEFAULT;
-if (!sessionStorage.getItem('fincity_el_key')) sessionStorage.setItem('fincity_el_key', _EL_DEFAULT);
+let   _elKey      = sessionStorage.getItem('fincity_el_key') || '';
 let   _curAudio = null;   // currently playing <Audio> for ElevenLabs
 
 // ---------- Gemini AI Game Commentary ----------
